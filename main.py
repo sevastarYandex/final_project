@@ -20,7 +20,7 @@ def init_data():
     db_sess = db_session.create_session()
     user = User()
     user.nick = 'admin228'
-    user.email = 'sevastar1475@gmail.com'
+    user.email = 'admin228@gmail.com'
     user.set_password('__admin228__')
     db_sess.add(user)
     db_sess.commit()
