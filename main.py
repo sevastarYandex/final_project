@@ -9,7 +9,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 login_manager = LoginManager()
 login_manager.init_app(app)
-db_name = 'db/music_db.db'
+db_name = 'db/eng_db.db'
 
 
 @app.errorhandler(404)
