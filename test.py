@@ -1,4 +1,3 @@
-import os
 from requests import get, put, post, delete
 from pprint import pprint
 
@@ -28,6 +27,22 @@ if __name__ == "__main__":
     mpt('/api/user', post, {'nick': 'abc 123',
                             'email': 'admin123@gmail.com',
                             'password': 'abc123'})
+    mpt('/api/user', get)
+    mpt('/api/user/sfsdf', put, {'nick': 'abc 123',
+                                 'email': 'admin123@gmail.com',
+                                 'password': 'abc123'})
+    mpt('/api/user', get)
+    mpt('/api/user/3', put, {'nick': 'abc 123',
+                             'email': 'admin123@gmail.com',
+                             'password': 'abc123'})
+    mpt('/api/user', get)
+    mpt('/api/user/2', put, {'nick': 'abc 123',
+                             'email': 'admin228@gmail.com',
+                             'password': 'abc123'})
+    mpt('/api/user', get)
+    mpt('/api/user/2', put, {'nick': 'abc 123',
+                             'email': 'admin227@gmail.com',
+                             'password': 'abc1234567'})
     mpt('/api/user', get)
     mpt('/api/user/3', delete)
     mpt('/api/user', get)
