@@ -11,7 +11,7 @@ class Word(SqlAlchemyBase, SerializerMixin):
                            primary_key=True, autoincrement=True)
     word = sqlalchemy.Column(sqlalchemy.String, unique=True)
     translation_list = sqlalchemy.Column(sqlalchemy.String)
-    host = sqlalchemy.Column(sqlalchemy.Integer,
+    user_id = sqlalchemy.Column(sqlalchemy.Integer,
                              sqlalchemy.ForeignKey('user.id'))
     user = orm.relationship('User')
 
