@@ -9,10 +9,11 @@ class Word(SqlAlchemyBase, SerializerMixin):
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
-    word = sqlalchemy.Column(sqlalchemy.String, unique=True)
+    word = sqlalchemy.Column(sqlalchemy.String)
     translation_list = sqlalchemy.Column(sqlalchemy.String)
     user_id = sqlalchemy.Column(sqlalchemy.Integer,
                              sqlalchemy.ForeignKey('user.id'))
+    is_public = sqlalchemy.Column(sqlalchemy.Boolean)
     user = orm.relationship('User')
 
     def __repr__(self):

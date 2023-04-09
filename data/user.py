@@ -11,11 +11,11 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
-    name = sqlalchemy.Column(sqlalchemy.String)
-    surname = sqlalchemy.Column(sqlalchemy.String)
+    nick = sqlalchemy.Column(sqlalchemy.String)
     email = sqlalchemy.Column(sqlalchemy.String, unique=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String)
     words = orm.relationship('Word', back_populates='user')
+    dictionaries = orm.relationship('Dictionary', back_populates='user')
 
     def __repr__(self):
         return f'User(id={self.id}, email="{self.email}")'
