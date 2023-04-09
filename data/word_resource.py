@@ -54,25 +54,29 @@ class WordResource(Resource):
         return jsonify({'success': 'ok'})
 
 
-class UserListResource(Resource):
+class WordListResource(Resource):
     def get(self):
         db_sess = db_session.create_session()
-        users = db_sess.query(User).all()
-        return jsonify({'users':
-                            [user.to_dict(only=fields)
-                             for user in users]})
+        words = db_sess.query(Word).all()
+        return jsonify({'words':
+                            [word.to_dict(only=fields)
+                             for word in words]})
 
     def post(self):
-        args = user_parser.parse_args()
+        args = word_parser.parse_args()
         db_sess = db_session.create_session()
-        if db_sess.query(User).filter(User.email == args['email']).all():
-            return jsonify(
-                {'error': f'email "{args["email"]}" is already used'}
-            )
-        user = User()
-        user.email = args['email']
-        user.nick = args['nick']
-        user.set_password(args['password'])
-        db_sess.add(user)
+        if not db_sess.query(User).get(args['user_id']):
+            return jsonify({'error': f'user with id={args["user_id"]} is not found'})
+        if args['word'] in list(map(lambda x: x.to_dict(only=('word',))['word'],
+                                    db_sess.query(Word).filter(
+                                        Word.user_id == args['user_id']).all())):
+            return jsonify({'error': f'user with id={args["user_id"]} '
+                                     f'already owns the word "{args["word"]}"'})
+        word = Word()
+        word.word = args['word']
+        word.translation_list = args['translation_list']
+        word.user_id = args['user_id']
+        word.is_public = args['is_public']
+        db_sess.add(word)
         db_sess.commit()
         return jsonify({'success': 'ok'})
