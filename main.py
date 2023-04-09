@@ -6,6 +6,7 @@ from data.user import User
 from data.word import Word
 from data.dictionary import Dictionary
 from data.user_resource import UserListResource, UserResource
+from data.word_resource import WordResource
 import os
 
 
@@ -61,6 +62,7 @@ def main():
     api = Api(app)
     api.add_resource(UserResource, '/api/user/<int:user_id>')
     api.add_resource(UserListResource, '/api/user')
+    api.add_resource(WordResource, '/api/word/<int:word_id>')
     app.run(port=8080, host='127.0.0.1')
 
 
