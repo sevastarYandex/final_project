@@ -17,7 +17,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     hashed_password = sqlalchemy.Column(sqlalchemy.String)
 
     def __repr__(self):
-        return f'<User> {self.id} {self.email}'
+        return f'User(id={self.id}, email="{self.email}")'
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)
