@@ -7,14 +7,21 @@ from sqlalchemy import orm
 class Dictionary(SqlAlchemyBase, SerializerMixin):
     __tablename__ = 'dictionary'
 
-    id = sqlalchemy.Column(sqlalchemy.Integer,
-                           primary_key=True, autoincrement=True)
-    title = sqlalchemy.Column(sqlalchemy.String)
-    description = sqlalchemy.Column(sqlalchemy.String)
-    word_id = sqlalchemy.Column(sqlalchemy.String)
-    user_id = sqlalchemy.Column(sqlalchemy.Integer,
-                             sqlalchemy.ForeignKey('user.id'))
-    is_public = sqlalchemy.Column(sqlalchemy.Boolean)
+    id = sqlalchemy.Column(
+        sqlalchemy.Integer,
+        primary_key=True,
+        autoincrement=True,
+        nullable=False
+    )
+    title = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    description = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    word_id = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    user_id = sqlalchemy.Column(
+        sqlalchemy.Integer,
+        sqlalchemy.ForeignKey('user.id'),
+        nullable=False
+    )
+    is_public = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
     user = orm.relationship('User')
 
     def __repr__(self):

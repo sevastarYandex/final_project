@@ -14,7 +14,7 @@ db_name = 'db/eng_db.db'
 
 def init_data():
     if os.path.exists(db_name):
-        os.remove(db_name)
+        return
     db_session.global_init(db_name)
 
 

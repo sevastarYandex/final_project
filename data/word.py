@@ -7,13 +7,20 @@ from sqlalchemy import orm
 class Word(SqlAlchemyBase, SerializerMixin):
     __tablename__ = 'word'
 
-    id = sqlalchemy.Column(sqlalchemy.Integer,
-                           primary_key=True, autoincrement=True)
-    word = sqlalchemy.Column(sqlalchemy.String)
-    translation_list = sqlalchemy.Column(sqlalchemy.String)
-    user_id = sqlalchemy.Column(sqlalchemy.Integer,
-                             sqlalchemy.ForeignKey('user.id'))
-    is_public = sqlalchemy.Column(sqlalchemy.Boolean)
+    id = sqlalchemy.Column(
+        sqlalchemy.Integer,
+        primary_key=True,
+        autoincrement=True,
+        nullable=False
+    )
+    word = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    translation_list = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    user_id = sqlalchemy.Column(
+        sqlalchemy.Integer,
+        sqlalchemy.ForeignKey('user.id'),
+        nullable=False
+    )
+    is_public = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
     user = orm.relationship('User')
 
     def __repr__(self):

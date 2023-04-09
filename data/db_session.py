@@ -6,8 +6,7 @@ import sqlalchemy.ext.declarative as dec
 SqlAlchemyBase = dec.declarative_base()
 
 
-def __factory():
-    pass
+__factory = None
 
 
 def global_init(db_file):

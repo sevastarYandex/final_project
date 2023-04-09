@@ -9,11 +9,15 @@ from werkzeug.security import generate_password_hash, check_password_hash
 class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     __tablename__ = 'user'
 
-    id = sqlalchemy.Column(sqlalchemy.Integer,
-                           primary_key=True, autoincrement=True)
-    nick = sqlalchemy.Column(sqlalchemy.String)
-    email = sqlalchemy.Column(sqlalchemy.String, unique=True)
-    hashed_password = sqlalchemy.Column(sqlalchemy.String)
+    id = sqlalchemy.Column(
+        sqlalchemy.Integer,
+        primary_key=True,
+        autoincrement=True,
+        nullable=False
+    )
+    nick = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    email = sqlalchemy.Column(sqlalchemy.String, unique=True, nullable=False)
+    hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     words = orm.relationship('Word', back_populates='user')
     dictionaries = orm.relationship('Dictionary', back_populates='user')
 
