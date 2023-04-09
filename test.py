@@ -21,9 +21,17 @@ if __name__ == "__main__":
     mpt('/api/user/1', get)
     mpt('/api/user/2', get)
     mpt('/api/user/dhjsvdn', get)
-    mpt('/api/post', post, {'nick': 'abc 123',
+    mpt('/api/user', post, {'nick': 'abc 123',
                             'email': 'admin228@gmail.com',
                             'password': 'abc123'})
-    mpt('/api/post', post, {'nick': 'abc 123',
-                            'email': 'admin227@gmail.com',
+    mpt('/api/user', get)
+    mpt('/api/user', post, {'nick': 'abc 123',
+                            'email': 'admin123@gmail.com',
                             'password': 'abc123'})
+    mpt('/api/user', get)
+    mpt('/api/user/3', delete)
+    mpt('/api/user', get)
+    mpt('/api/user/sdfsd', delete)
+    mpt('/api/user', get)
+    mpt('/api/user/2', delete)
+    mpt('/api/user', get)
