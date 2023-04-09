@@ -3,6 +3,8 @@ from flask_login import LoginManager
 from flask_restful import Api
 from data import db_session
 from data.user import User
+from data.word import Word
+from data.dictionary import Dictionary
 from data.user_resource import UserListResource, UserResource
 import os
 
@@ -23,7 +25,20 @@ def init_data():
     user.nick = 'admin228'
     user.email = 'admin228@gmail.com'
     user.set_password('__admin228__')
+    word = Word()
+    word.word = 'word'
+    word.translation_list = 'слово'
+    word.user_id = 1
+    word.is_public = True
+    dictionary = Dictionary()
+    dictionary.title = 'my dictionary'
+    dictionary.description = 'cool dictionary'
+    dictionary.word_id = '1'
+    dictionary.user_id = 1
+    dictionary.is_public = True
     db_sess.add(user)
+    db_sess.add(word)
+    db_sess.add(dictionary)
     db_sess.commit()
 
 
