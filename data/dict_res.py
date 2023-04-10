@@ -95,7 +95,13 @@ class DictListRes(Resource):
             return jsonify({
                 'message': f'user with id={args["user_id"]} '
                            f'already has dict "{args["title"]}"'})
-        for wd_id in list(map(int, args['wd_ids'].split(', '))):
+        for wd_id in args['wd_ids'].split(', '):
+            try:
+                wd_id = int(wd_id)
+            except Exception:
+                return jsonify({
+                    'message': f'word with id="{wd_id}" is not found'
+                })
             if not session.query(Word).get(wd_id):
                 return jsonify({
                     'message': f'word with id={wd_id} is not found'
