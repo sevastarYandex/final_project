@@ -40,6 +40,11 @@ class WordRes(Resource):
         session = db_session.create_session()
         word = session.query(Word).get(word_id)
         session.delete(word)
+        for dict in session.query(Dict).all():
+            ids = list(map(int, dict.wd_ids.split(', ')))
+            if word_id in ids:
+                ids.remove(word_id)
+            dict.wd_ids = ', '.join(map(str, ids))
         session.commit()
         return jsonify({'message': 'ok'})
 
