@@ -27,7 +27,7 @@ class WordRes(Resource):
         dicts = [dict.to_dict(only=('title',))['title']
                  for dict in dicts
                  if word_id in list(map(
-                int, dict.to_dict(only=('wd_ids',)).split(', ')))]
+                int, dict.to_dict(only=('wd_ids',))['wd_ids'].split(', ')))]
         resp['dicts'] = dicts
         return jsonify({'message': 'ok', 'resp': {'word': resp}})
 #
