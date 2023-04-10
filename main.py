@@ -20,12 +20,12 @@ db_name = 'db/eng_db.db'
 
 @app.errorhandler(404)
 def not_found(_):
-    return make_response(jsonify({'error': 'Not found'}), 404)
+    return make_response(jsonify({'message': 'not found'}), 404)
 
 
 @app.errorhandler(400)
 def bad_request(_):
-    return make_response(jsonify({'error': 'Bad Request'}), 400)
+    return make_response(jsonify({'message': 'bad request'}), 400)
 
 
 def init_data():
