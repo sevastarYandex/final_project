@@ -2,28 +2,34 @@ from flask_restful import abort, Resource
 from . import db_session
 from .user import User
 from .word import Word
+from .dict import Dict
 from flask import jsonify
 from .parser import word_parser
-# fields = ('id', 'word', 'translation_list', 'user_id', 'is_public')
-#
-#
-# def abort_if_word_not_found(word_id):
-#     session = db_session.create_session()
-#     word = session.query(Word).get(word_id)
-#     if not word:
-#         abort(404, error=f'word with id={word_id} is not found')
-#
-#
-# class WordResource(Resource):
-#     def get(self, word_id):
-#         abort_if_word_not_found(word_id)
-#         db_sess = db_session.create_session()
-#         word = db_sess.query(Word).get(word_id)
-#         resp = word.to_dict(only=fields)
-#         user_nick = word.user.to_dict(only=('nick',))['nick']
-#         resp['user_nick'] = user_nick
-#         del resp['user_id']
-#         return jsonify({'word': resp})
+fields = ('id', 'word', 'tr_list', 'user_id', 'is_pb')
+
+
+def abort_if_word_not_found(word_id):
+    session = db_session.create_session()
+    word = session.query(Word).get(word_id)
+    if not word:
+        abort(404, message=f'word with id={word_id} is not found')
+
+
+class WordRes(Resource):
+    def get(self, word_id):
+        abort_if_word_not_found(word_id)
+        session = db_session.create_session()
+        word = session.query(Word).get(word_id)
+        resp = word.to_dict(only=fields)
+        user_nick = word.user.to_dict(only=('nick',))['nick']
+        resp['user_nick'] = user_nick
+        dicts = session.query(Dict).all()
+        dicts = [dict.to_dict(only=('title',))['title']
+                 for dict in dicts
+                 if word_id in list(map(
+                int, dict.to_dict(only=('wd_ids',)).split(', ')))]
+        resp['dicts'] = dicts
+        return jsonify({'message': 'ok', 'resp': {'word': resp}})
 #
 #     def delete(self, word_id):
 #         abort_if_word_not_found(word_id)
@@ -55,13 +61,13 @@ from .parser import word_parser
 #         return jsonify({'success': 'ok'})
 #
 #
-# class WordListResource(Resource):
-#     def get(self):
-#         db_sess = db_session.create_session()
-#         words = db_sess.query(Word).all()
-#         return jsonify({'words':
-#                             [word.to_dict(only=fields)
-#                              for word in words]})
+class WordListRes(Resource):
+    def get(self):
+        session = db_session.create_session()
+        words = session.query(Word).all()
+        return jsonify({'words': [
+            word.to_dict(only=fields)
+            for word in words]})
 #
 #     def post(self):
 #         args = word_parser.parse_args()
