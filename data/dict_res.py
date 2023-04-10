@@ -21,6 +21,15 @@ class DictRes(Resource):
         session = db_session.create_session()
         dict = session.query(Dict).get(dict_id)
         resp = dict.to_dict(only=DC_FIELDS)
+        del resp['user_id']
+        resp['user'] = dict.user.to_dict(only=US_FIELDS)
+        wd_ids = list(map(int, dict.wd_ids.split(', ')))
+        del resp['wd_ids']
+        resp['words'] = []
+        for wd_id in wd_ids:
+            word = session.query(Word).get(wd_id).to_dict(only=WD_FIELDS)
+            del word['user_id']
+            resp['words'].append(word)
         return jsonify({'message': 'ok', 'resp': {'dict': resp}})
 #
 #     def delete(self, dictionary_id):
