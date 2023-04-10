@@ -3,7 +3,7 @@ from flask import jsonify
 from . import db_session
 from .user import User
 from .parser import user_parser
-from .constant import US_FIELDS
+from .constant import US_FIELDS, WD_FIELDS, DC_FIELDS
 
 
 def abort_if_user_not_found(user_id):
@@ -20,18 +20,23 @@ class UserRes(Resource):
         user = session.query(User).get(user_id)
         resp = user.to_dict(only=US_FIELDS)
         words = list(map(
-            lambda x: x.to_dict(only=('id', 'word', 'tr_list', 'is_pb')),
+            lambda x: x.to_dict(only=WD_FIELDS),
             user.words
         ))
+        for i in range(len(words)):
+            word = words[i]
+            del word['user_id']
+            words[i] = word
+        resp['words'] = words
         dicts = list(map(
-            lambda x: x.to_dict(only=('id', 'title', 'desc', 'wd_ids', 'is_pb')),
+            lambda x: x.to_dict(only=DC_FIELDS),
             user.dicts
         ))
         for i in range(len(dicts)):
             dict = dicts[i]
             dict['wd_ids'] = list(map(int, dict['wd_ids'].split(', ')))
+            del dict['user_id']
             dicts[i] = dict
-        resp['words'] = words
         resp['dicts'] = dicts
         return jsonify({'message': 'ok', 'resp': {'user': resp}})
 
