@@ -21,13 +21,11 @@ class WordRes(Resource):
         session = db_session.create_session()
         word = session.query(Word).get(word_id)
         resp = word.to_dict(only=fields)
-        user_nick = word.user.to_dict(only=('nick',))['nick']
+        user_nick = word.user.nick
         resp['user_nick'] = user_nick
         dicts = session.query(Dict).all()
-        dicts = [dict.to_dict(only=('title',))['title']
-                 for dict in dicts
-                 if word_id in list(map(
-                int, dict.to_dict(only=('wd_ids',))['wd_ids'].split(', ')))]
+        dicts = [dict.title for dict in dicts
+                 if word_id in list(map(int, dict.wd_ids.split(', ')))]
         resp['dicts'] = dicts
         return jsonify({'message': 'ok', 'resp': {'word': resp}})
 #

@@ -19,10 +19,8 @@ class UserRes(Resource):
         session = db_session.create_session()
         user = session.query(User).get(user_id)
         resp = user.to_dict(only=fields)
-        words = list(map(
-            lambda x: x.to_dict(only=('word',))['word'], user.words))
-        dicts = list(map(
-            lambda x: x.to_dict(only=('title',))['title'], user.dicts))
+        words = list(map(lambda x: x.word, user.words))
+        dicts = list(map(lambda x: x.title, user.dicts))
         resp['words'] = words
         resp['dicts'] = dicts
         return jsonify({'message': 'ok', 'resp': {'user': resp}})
@@ -44,7 +42,7 @@ class UserRes(Resource):
                 session.query(User).filter(User.email == args['email']).all():
             return jsonify({'message':
                                 f'user with email="{args["email"]}" already exists'})
-        id = user.to_dict(only=('id',))['id']
+        id = user.id
         session.delete(user)
         user = User()
         user.id = id
@@ -60,17 +58,24 @@ class UserListRes(Resource):
     def get(self):
         session = db_session.create_session()
         users = session.query(User).all()
-        return jsonify({'message': 'ok',
-                        'resp': {'users':
-                                     [user.to_dict(only=fields)
-                                      for user in users]}})
+        return jsonify(
+            {
+                'message': 'ok',
+                'resp': {
+                    'users': [
+                        user.to_dict(only=fields) for user in users
+                    ]
+                }
+            }
+        )
 
     def post(self):
         args = user_parser.parse_args()
         session = db_session.create_session()
         if session.query(User).filter(User.email == args['email']).all():
-            return jsonify({'message':
-                                f'user with email="{args["email"]}" already exists'})
+            return jsonify({
+                'message': f'user with email="{args["email"]}" already exists'
+            })
         user = User()
         user.email = args['email']
         user.nick = args['nick']
