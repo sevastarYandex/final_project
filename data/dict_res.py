@@ -40,34 +40,31 @@ class DictRes(Resource):
         session.commit()
         return jsonify({'message': 'ok'})
 
-#     def put(self, dictionary_id):
-#         abort_if_dictionary_not_found(dictionary_id)
-#         db_sess = db_session.create_session()
-#         dictionary = db_sess.query(Dictionary).get(dictionary_id)
-#         args = dictionary_parser.parse_args()
-#         if args['user_id'] != dictionary.user_id:
-#             return jsonify({'error': 'impossible to change host'})
-#         if args['title'] != dictionary.title and \
-#                 args['title'] in \
-#                 list(map(
-#                     lambda x: x.to_dict(only=('title',))['title'],
-#                     db_sess.query(Dictionary).filter(
-#                         Dictionary.title == args['title']).all())):
-#             return jsonify({'error': ''})
-#         id = dictionary.to_dict(only=('id',))['id']
-#         db_sess.delete(dictionary)
-#         dictionary = Dictionary()
-#         dictionary.id = id
-#         dictionary.title = args['title']
-#         dictionary.description = args['description']
-#         dictionary.word_id = args['word_id']
-#         dictionary.user_id = args['user_id']
-#         dictionary.is_public = args['is_public']
-#         db_sess.add(dictionary)
-#         db_sess.commit()
-#         return jsonify({'success': 'ok'})
-#
-#
+    def put(self, dict_id):
+        abort_if_dict_not_found(dict_id)
+        session = db_session.create_session()
+        dict = session.query(Dict).get(dict_id)
+        args = dict_put_parser.parse_args()
+        if args['title'] != dict.title and \
+                session.query(Dict).filter(
+                    Dict.user_id == dict.user_id,
+                    Dict.title == args['title']).all():
+            return jsonify({
+                'message': f'user with id={dict.user_id} '
+                           f'already has dict "{args["title"]}"'})
+        for wd_id in list(map(int, args['wd_ids'].split(', '))):
+            if not session.query(Word).get(wd_id):
+                return jsonify({
+                    'message': f'word with id={wd_id} is not found'
+                })
+        dict.title = args['title']
+        dict.desc = args['desc']
+        dict.wd_ids = args['wd_ids']
+        dict.is_pb = args['is_pb']
+        session.commit()
+        return jsonify({'message': 'ok'})
+
+
 class DictListRes(Resource):
     def get(self):
         session = db_session.create_session()
