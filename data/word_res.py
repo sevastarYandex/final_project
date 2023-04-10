@@ -49,8 +49,10 @@ class WordRes(Resource):
         word = session.query(Word).get(word_id)
         args = word_put_parser.parse_args()
         if args['word'] != word.word and \
-                session.query(Word).filter(Word.word == args['word']).all():
-            return jsonify({'message': f'word "{args["word"]}" already exists'})
+                session.query(Word).filter(Word.word == args['word'],
+                                           Word.user_id == word.user_id).all():
+            return jsonify({'message': f'user with id={word.user_id} already has '
+                                       f'word "{args["word"]}"'})
         id = word.id
         user_id = word.user_id
         session.delete(word)
