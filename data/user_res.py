@@ -24,9 +24,13 @@ class UserRes(Resource):
             user.words
         ))
         dicts = list(map(
-            lambda x: x.to_dict(only=('id', 'title', 'desc', 'is_pb')),
+            lambda x: x.to_dict(only=('id', 'title', 'desc', 'wd_ids', 'is_pb')),
             user.dicts
         ))
+        for i in range(len(dicts)):
+            dict = dicts[i]
+            dict['wd_ids'] = list(map(int, dict['wd_ids'].split(', ')))
+            dicts[i] = dict
         resp['words'] = words
         resp['dicts'] = dicts
         return jsonify({'message': 'ok', 'resp': {'user': resp}})
