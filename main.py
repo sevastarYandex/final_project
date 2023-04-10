@@ -5,8 +5,9 @@ from data import db_session
 from data.user import User
 from data.word import Word
 from data.dictionary import Dictionary
-from data.user_resource import UserListResource, UserResource
+from data.user_resource import UserResource, UserListResource
 from data.word_resource import WordResource, WordListResource
+from data.dictionary_resource import DictionaryResource, DictionaryListResource
 import os
 
 
@@ -64,6 +65,8 @@ def main():
     api.add_resource(UserListResource, '/api/user')
     api.add_resource(WordResource, '/api/word/<int:word_id>')
     api.add_resource(WordListResource, '/api/word')
+    api.add_resource(DictionaryResource, '/api/dictionary/<int:dictionary_id>')
+    api.add_resource(DictionaryListResource, '/api/dictionary')
     app.run(port=8080, host='127.0.0.1')
 
 
