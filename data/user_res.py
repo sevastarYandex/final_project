@@ -19,8 +19,14 @@ class UserRes(Resource):
         session = db_session.create_session()
         user = session.query(User).get(user_id)
         resp = user.to_dict(only=fields)
-        words = list(map(lambda x: x.word, user.words))
-        dicts = list(map(lambda x: x.title, user.dicts))
+        words = list(map(
+            lambda x: x.to_dict(only=('id', 'word', 'tr_list', 'is_pb')),
+            user.words
+        ))
+        dicts = list(map(
+            lambda x: x.to_dict(only=('id', 'title', 'desc', 'is_pb')),
+            user.dicts
+        ))
         resp['words'] = words
         resp['dicts'] = dicts
         return jsonify({'message': 'ok', 'resp': {'user': resp}})
