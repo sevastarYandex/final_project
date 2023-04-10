@@ -71,14 +71,13 @@ class DictRes(Resource):
 class DictListRes(Resource):
     def get(self):
         session = db_session.create_session()
-        dicts = session.query(Dict).all()
-        return jsonify(
-            {
-                'dicts': [
-                    dict.to_dict(only=DC_FIELDS) for dict in dicts
-                ]
-            }
-        )
+        dicts = []
+        for dict in session.query(Dict).all():
+            dict = dict.to_dict(only=DC_FIELDS)
+            dict['wd_ids'] = list(map(int, dict['wd_ids'].split(', ')))
+            dicts.append(dict)
+        return jsonify({'message': 'ok',
+                        'resp': {'dicts': dicts}})
 
 #     def post(self):
 #         args = dictionary_parser.parse_args()
