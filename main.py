@@ -4,7 +4,7 @@ from flask_restful import Api
 from data import db_session
 from data.user import User
 from data.word import Word
-from data.dictionary import Dictionary
+from data.dict import Dictionary
 from data.user_resource import UserResource, UserListResource
 from data.word_resource import WordResource, WordListResource
 from data.dictionary_resource import DictionaryResource, DictionaryListResource

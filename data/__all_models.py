@@ -1,1 +1,1 @@
-from . import user, word, dictionary
+from . import user, word, dict

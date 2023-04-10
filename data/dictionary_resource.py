@@ -2,7 +2,7 @@ from flask_restful import abort, Resource
 from . import db_session
 from .user import User
 from .word import Word
-from .dictionary import Dictionary
+from .dict import Dictionary
 from flask import jsonify
 from .parser import dictionary_parser
 # fields = ('id', 'title', 'description', 'word_id', 'user_id', 'is_public')
