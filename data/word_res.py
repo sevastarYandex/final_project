@@ -4,7 +4,7 @@ from .user import User
 from .word import Word
 from .dict import Dict
 from flask import jsonify
-from .parser import word_parser
+from .parser import word_post_parser, word_put_parser
 from .constant import US_FIELDS, WD_FIELDS, DC_FIELDS
 
 
@@ -47,22 +47,22 @@ class WordRes(Resource):
         abort_if_word_not_found(word_id)
         session = db_session.create_session()
         word = session.query(Word).get(word_id)
-        args = word_parser.parse_args()
-        if args['user_id'] != word.user_id:
-            return jsonify({'error': 'impossible to change host'})
-        if args['word'] != word.word:
-            return jsonify({'error': 'impossible to change word root'})
-        id = word.to_dict(only=('id',))['id']
-        db_sess.delete(word)
+        args = word_put_parser.parse_args()
+        if args['word'] != word.word and \
+                session.query(Word).filter(Word.word == args['word']).all():
+            return jsonify({'message': f'word "{args["word"]}" already exists'})
+        id = word.id
+        user_id = word.user_id
+        session.delete(word)
         word = Word()
         word.id = id
+        word.user_id = user_id
         word.word = args['word']
-        word.translation_list = args['translation_list']
-        word.user_id = args['user_id']
-        word.is_public = args['is_public']
-        db_sess.add(word)
-        db_sess.commit()
-        return jsonify({'success': 'ok'})
+        word.tr_list = args['tr_list']
+        word.is_pb = args['is_pb']
+        session.add(word)
+        session.commit()
+        return jsonify({'message': 'ok'})
 
 
 class WordListRes(Resource):
@@ -79,22 +79,17 @@ class WordListRes(Resource):
                 }
             }
         )
-#
-#     def post(self):
-#         args = word_parser.parse_args()
-#         db_sess = db_session.create_session()
-#         if not db_sess.query(User).get(args['user_id']):
-#             return jsonify({'error': f'user with id={args["user_id"]} is not found'})
-#         if args['word'] in list(map(lambda x: x.to_dict(only=('word',))['word'],
-#                                     db_sess.query(Word).filter(
-#                                         Word.user_id == args['user_id']).all())):
-#             return jsonify({'error': f'user with id={args["user_id"]} '
-#                                      f'already owns the word "{args["word"]}"'})
-#         word = Word()
-#         word.word = args['word']
-#         word.translation_list = args['translation_list']
-#         word.user_id = args['user_id']
-#         word.is_public = args['is_public']
-#         db_sess.add(word)
-#         db_sess.commit()
-#         return jsonify({'success': 'ok'})
+
+    def post(self):
+        args = word_post_parser.parse_args()
+        session = db_session.create_session()
+        if session.query(Word).filter(Word.word == args['word']).all():
+            return jsonify({'message': f'word "{args["word"]}" already exists'})
+        word = Word()
+        word.word = args['word']
+        word.tr_list = args['tr_list']
+        word.user_id = args['user_id']
+        word.is_pb = args['is_pb']
+        session.add(word)
+        session.commit()
+        return jsonify({'message': 'ok'})
