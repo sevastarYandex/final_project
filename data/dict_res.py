@@ -79,18 +79,19 @@ class DictListRes(Resource):
         return jsonify({'message': 'ok',
                         'resp': {'dicts': dicts}})
 
-#     def post(self):
-#         args = dictionary_parser.parse_args()
-#         db_sess = db_session.create_session()
-#         if not db_sess.query(Dictionary).get(args['user_id']):
-#             return jsonify({'error': f'user with id={args["user_id"]} is not found'})
-#         #
-#         dictionary = Dictionary()
-#         dictionary.title = args['title']
-#         dictionary.description = args['description']
-#         dictionary.word_id = args['word_id']
-#         dictionary.user_id = args['user_id']
-#         dictionary.is_public = args['is_public']
-#         db_sess.add(dictionary)
-#         db_sess.commit()
-#         return jsonify({'success': 'ok'})
+    def post(self):
+        args = dict_post_parser.parse_args()
+        session = db_session.create_session()
+        if not session.query(User).get(args['user_id']):
+            return jsonify({
+                'message': f'user with id={args["user_id"]} is not found'
+            })
+        dict = Dict()
+        dict.title = args['title']
+        dict.desc = args['desc']
+        dict.wd_ids = args['wd_ids']
+        dict.user_id = args['user_id']
+        dict.is_pb = args['is_pb']
+        session.add(dict)
+        session.commit()
+        return jsonify({'message': 'ok'})
