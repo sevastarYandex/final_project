@@ -4,9 +4,8 @@ from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy import orm
 
 
-class Dictionary(SqlAlchemyBase, SerializerMixin):
-    __tablename__ = 'dictionary'
-
+class Dict(SqlAlchemyBase, SerializerMixin):
+    __tablename__ = 'dict'
     id = sqlalchemy.Column(
         sqlalchemy.Integer,
         primary_key=True,
@@ -14,14 +13,14 @@ class Dictionary(SqlAlchemyBase, SerializerMixin):
         nullable=False
     )
     title = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    description = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    word_ids = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    desc = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    wd_ids = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     user_id = sqlalchemy.Column(
         sqlalchemy.Integer,
         sqlalchemy.ForeignKey('user.id'),
         nullable=False
     )
-    is_public = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
+    is_pb = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
     user = orm.relationship('User')
 
     def __repr__(self):

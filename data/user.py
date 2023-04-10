@@ -18,7 +18,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     email = sqlalchemy.Column(sqlalchemy.String, unique=True, nullable=False)
     hashed_psw = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     words = orm.relationship('Word', back_populates='user')
-    dictionaries = orm.relationship('Dictionary', back_populates='user')
+    dicts = orm.relationship('Dict', back_populates='user')
 
     def __repr__(self):
         return f'User(id={self.id}, email="{self.email}")'
