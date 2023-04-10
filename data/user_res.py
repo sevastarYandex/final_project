@@ -23,9 +23,6 @@ class UserRes(Resource):
             lambda x: x.to_dict(only=WD_FIELDS),
             user.words
         ))
-        for i in range(len(words)):
-            word = words[i]
-            words[i] = word
         resp['words'] = words
         dicts = list(map(
             lambda x: x.to_dict(only=DC_FIELDS),

@@ -28,7 +28,6 @@ class DictRes(Resource):
         resp['words'] = []
         for wd_id in wd_ids:
             word = session.query(Word).get(wd_id).to_dict(only=WD_FIELDS)
-            del word['user_id']
             resp['words'].append(word)
         return jsonify({'message': 'ok', 'resp': {'dict': resp}})
 
