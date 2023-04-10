@@ -1,10 +1,10 @@
 from flask_restful import abort, Resource
 from . import db_session
-from .dictionary import Dictionary
 from .user import User
+from .dictionary import Dictionary
 from flask import jsonify
-from .parser import word_parser
-fields = ('id', 'word', 'translation_list', 'user_id', 'is_public')
+from .parser import dictionary_parser
+fields = ('id', 'title', 'description', 'word_id', 'user_id', 'is_public')
 
 
 def abort_if_word_not_found(word_id):
