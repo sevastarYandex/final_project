@@ -46,8 +46,10 @@ class UserResource(Resource):
             return jsonify(
                 {'error': f'email "{args["email"]}" is already used'}
             )
+        id = user.to_dict(only=('id',))['id']
         db_sess.delete(user)
         user = User()
+        user.id = id
         user.nick = args['nick']
         user.email = args['email']
         user.set_password(args['password'])

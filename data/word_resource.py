@@ -43,8 +43,10 @@ class WordResource(Resource):
             return jsonify({'error': 'impossible to change host'})
         if args['word'] != word.word:
             return jsonify({'error': 'impossible to change word root'})
+        id = word.to_dict(only=('id',))['id']
         db_sess.delete(word)
         word = Word()
+        word.id = id
         word.word = args['word']
         word.translation_list = args['translation_list']
         word.user_id = args['user_id']
