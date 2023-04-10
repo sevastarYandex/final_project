@@ -21,12 +21,9 @@ class WordRes(Resource):
         session = db_session.create_session()
         word = session.query(Word).get(word_id)
         resp = word.to_dict(only=fields)
-        user_nick = word.user.nick
-        resp['user_nick'] = user_nick
-        dicts = session.query(Dict).all()
-        dicts = [dict.title for dict in dicts
-                 if word_id in list(map(int, dict.wd_ids.split(', ')))]
-        resp['dicts'] = dicts
+        user = session.query(User).get(resp['user_id'])
+        del resp['user_id']
+        user = user.to_dict()
         return jsonify({'message': 'ok', 'resp': {'word': resp}})
 #
 #     def delete(self, word_id):
@@ -63,9 +60,16 @@ class WordListRes(Resource):
     def get(self):
         session = db_session.create_session()
         words = session.query(Word).all()
-        return jsonify({'words': [
-            word.to_dict(only=fields)
-            for word in words]})
+        return jsonify(
+            {
+                'message': 'ok',
+                'resp': {
+                    'words': [
+                        word.to_dict(only=fields) for word in words
+                    ]
+                }
+            }
+        )
 #
 #     def post(self):
 #         args = word_parser.parse_args()

@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, make_response, jsonify
 from flask_login import LoginManager
 from flask_restful import Api
 from data import db_session
+from data import constant
 from data.user import User
 from data.word import Word
 from data.dict import Dict
@@ -12,10 +13,10 @@ import os
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+app.config['SECRET_KEY'] = constant.SECRET_KEY
 login_manager = LoginManager()
 login_manager.init_app(app)
-db_name = 'db/eng_db.db'
+db_name = constant.DB_NAME
 
 
 @app.errorhandler(404)
@@ -58,7 +59,7 @@ def main():
     try:
         init_data()
     except Exception:
-        print('message: please close database in other apps')
+        print('message: database is opened in ohter apps')
         exit(0)
     api = Api(app)
     api.add_resource(UserRes, '/api/user/<int:user_id>')
@@ -67,7 +68,7 @@ def main():
     api.add_resource(WordListRes, '/api/word')
     # api.add_resource(DictRes, '/api/dict/<int:dict_id>')
     # api.add_resource(DictListRes, '/api/dict')
-    app.run(port=8080, host='127.0.0.1')
+    app.run(port=constant.PORT, host=constant.HOST)
 
 
 if __name__ == '__main__':
