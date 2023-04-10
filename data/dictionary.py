@@ -15,7 +15,7 @@ class Dictionary(SqlAlchemyBase, SerializerMixin):
     )
     title = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     description = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    word_id = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    word_ids = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     user_id = sqlalchemy.Column(
         sqlalchemy.Integer,
         sqlalchemy.ForeignKey('user.id'),
