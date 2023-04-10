@@ -6,8 +6,8 @@ from data.user import User
 from data.word import Word
 from data.dict import Dict
 from data.user_res import UserRes, UserListRes
-from data.word_res import WordRes, WordListRes
-from data.dict_res import DictRes, DictListRes
+# from data.word_res import WordRes, WordListRes
+# from data.dict_res import DictRes, DictListRes
 import os
 
 
@@ -32,26 +32,26 @@ def init_data():
     if os.path.exists(db_name):
         os.remove(db_name)
     db_session.global_init(db_name)
-    db_sess = db_session.create_session()
+    session = db_session.create_session()
     user = User()
     user.nick = 'admin228'
     user.email = 'admin228@gmail.com'
-    user.set_password('__admin228__')
+    user.set_psw('__admin228__')
     word = Word()
     word.word = 'word'
-    word.translation_list = 'слово'
+    word.tr_list = 'слово'
     word.user_id = 1
-    word.is_public = True
-    dictionary = Dictionary()
-    dictionary.title = 'my dictionary'
-    dictionary.description = 'cool dictionary'
-    dictionary.word_id = '1'
-    dictionary.user_id = 1
-    dictionary.is_public = True
-    db_sess.add(user)
-    db_sess.add(word)
-    db_sess.add(dictionary)
-    db_sess.commit()
+    word.is_pb = True
+    dict = Dict()
+    dict.title = 'my dictionary'
+    dict.desc = 'cool dictionary'
+    dict.wd_ids = '1'
+    dict.user_id = 1
+    dict.is_pb = True
+    session.add(user)
+    session.add(word)
+    session.add(dict)
+    session.commit()
 
 
 def main():
@@ -63,10 +63,10 @@ def main():
     api = Api(app)
     api.add_resource(UserRes, '/api/user/<int:user_id>')
     api.add_resource(UserListRes, '/api/user')
-    api.add_resource(WordRes, '/api/word/<int:word_id>')
-    api.add_resource(WordListRes, '/api/word')
-    api.add_resource(DictRes, '/api/dict/<int:dict_id>')
-    api.add_resource(DictListRes, '/api/dict')
+    # api.add_resource(WordRes, '/api/word/<int:word_id>')
+    # api.add_resource(WordListRes, '/api/word')
+    # api.add_resource(DictRes, '/api/dict/<int:dict_id>')
+    # api.add_resource(DictListRes, '/api/dict')
     app.run(port=8080, host='127.0.0.1')
 
 
