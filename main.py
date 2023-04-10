@@ -8,7 +8,7 @@ from data.word import Word
 from data.dict import Dict
 from data.user_res import UserRes, UserListRes
 from data.word_res import WordRes, WordListRes
-# from data.dict_res import DictRes, DictListRes
+from data.dict_res import DictRes, DictListRes
 import os
 
 
@@ -66,8 +66,8 @@ def main():
     api.add_resource(UserListRes, '/api/user')
     api.add_resource(WordRes, '/api/word/<int:word_id>')
     api.add_resource(WordListRes, '/api/word')
-    # api.add_resource(DictRes, '/api/dict/<int:dict_id>')
-    # api.add_resource(DictListRes, '/api/dict')
+    api.add_resource(DictRes, '/api/dict/<int:dict_id>')
+    api.add_resource(DictListRes, '/api/dict')
     app.run(port=constant.PORT, host=constant.HOST)
 
 

@@ -5,7 +5,7 @@ from .word import Word
 from .dict import Dict
 from flask import jsonify
 from .parser import dict_put_parser, dict_post_parser
-from constant import US_FIELDS, WD_FIELDS, DC_FIELDS
+from .constant import US_FIELDS, WD_FIELDS, DC_FIELDS
 
 
 def abort_if_dict_not_found(dict_id):
