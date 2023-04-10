@@ -1,7 +1,7 @@
 from flask_restful import abort, Resource
 from . import db_session
-from .word import Word
 from .user import User
+from .word import Word
 from flask import jsonify
 from .parser import word_parser
 fields = ('id', 'word', 'translation_list', 'user_id', 'is_public')
@@ -20,8 +20,7 @@ class WordResource(Resource):
         db_sess = db_session.create_session()
         word = db_sess.query(Word).get(word_id)
         resp = word.to_dict(only=fields)
-        user_nick = db_sess.query(User).get(resp['user_id']).to_dict(
-            only=('nick',))['nick']
+        user_nick = word.user.to_dict(only=('nick',))['nick']
         resp['user_nick'] = user_nick
         del resp['user_id']
         return jsonify({'word': resp})
