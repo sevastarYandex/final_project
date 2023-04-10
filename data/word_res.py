@@ -34,37 +34,37 @@ class WordRes(Resource):
             dicts[i] = dict
         resp['dicts'] = dicts
         return jsonify({'message': 'ok', 'resp': {'word': resp}})
-#
-#     def delete(self, word_id):
-#         abort_if_word_not_found(word_id)
-#         db_sess = db_session.create_session()
-#         word = db_sess.query(Word).get(word_id)
-#         db_sess.delete(word)
-#         db_sess.commit()
-#         return jsonify({'success': 'ok'})
-#
-#     def put(self, word_id):
-#         abort_if_word_not_found(word_id)
-#         db_sess = db_session.create_session()
-#         word = db_sess.query(Word).get(word_id)
-#         args = word_parser.parse_args()
-#         if args['user_id'] != word.user_id:
-#             return jsonify({'error': 'impossible to change host'})
-#         if args['word'] != word.word:
-#             return jsonify({'error': 'impossible to change word root'})
-#         id = word.to_dict(only=('id',))['id']
-#         db_sess.delete(word)
-#         word = Word()
-#         word.id = id
-#         word.word = args['word']
-#         word.translation_list = args['translation_list']
-#         word.user_id = args['user_id']
-#         word.is_public = args['is_public']
-#         db_sess.add(word)
-#         db_sess.commit()
-#         return jsonify({'success': 'ok'})
-#
-#
+
+    def delete(self, word_id):
+        abort_if_word_not_found(word_id)
+        session = db_session.create_session()
+        word = session.query(Word).get(word_id)
+        session.delete(word)
+        session.commit()
+        return jsonify({'message': 'ok'})
+
+    def put(self, word_id):
+        abort_if_word_not_found(word_id)
+        session = db_session.create_session()
+        word = session.query(Word).get(word_id)
+        args = word_parser.parse_args()
+        if args['user_id'] != word.user_id:
+            return jsonify({'error': 'impossible to change host'})
+        if args['word'] != word.word:
+            return jsonify({'error': 'impossible to change word root'})
+        id = word.to_dict(only=('id',))['id']
+        db_sess.delete(word)
+        word = Word()
+        word.id = id
+        word.word = args['word']
+        word.translation_list = args['translation_list']
+        word.user_id = args['user_id']
+        word.is_public = args['is_public']
+        db_sess.add(word)
+        db_sess.commit()
+        return jsonify({'success': 'ok'})
+
+
 class WordListRes(Resource):
     def get(self):
         session = db_session.create_session()
