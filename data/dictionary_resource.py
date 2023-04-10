@@ -43,7 +43,13 @@ class DictionaryResource(Resource):
         args = dictionary_parser.parse_args()
         if args['user_id'] != dictionary.user_id:
             return jsonify({'error': 'impossible to change host'})
-        #
+        if args['title'] != dictionary.title and \
+                args['title'] in \
+                list(map(
+                    lambda x: x.to_dict(only=('title',))['title'],
+                    db_sess.query(Dictionary).filter(
+                        Dictionary.title == args['title']).all())):
+            return jsonify({'error': ''})
         id = dictionary.to_dict(only=('id',))['id']
         db_sess.delete(dictionary)
         dictionary = Dictionary()
