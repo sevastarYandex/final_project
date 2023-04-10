@@ -85,8 +85,13 @@ class WordListRes(Resource):
     def post(self):
         args = word_post_parser.parse_args()
         session = db_session.create_session()
-        if session.query(Word).filter(Word.word == args['word']).all():
-            return jsonify({'message': f'word "{args["word"]}" already exists'})
+        if session.query(Word).filter(Word.word == args['word'],
+                                      Word.user_id == args['user_id']).all():
+            return jsonify({'message': f'user with id={args["user_id"]} already has '
+                                       f'word "{args["word"]}"'})
+        if not session.query(User).get(args['user_id']):
+            return jsonify({'message':
+                                f'user with id={args["user_id"]} is not found'})
         word = Word()
         word.word = args['word']
         word.tr_list = args['tr_list']
