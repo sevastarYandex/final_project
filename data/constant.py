@@ -4,3 +4,4 @@ PORT = 8080
 HOST = '127.0.0.1'
 US_FIELDS = ('id', 'nick', 'email', 'hashed_psw')
 WD_FIELDS = ('id', 'word', 'tr_list', 'user_id', 'is_pb')
+DC_FIELDS = ('id', 'title', 'desc', 'wd_ids', 'user_id', 'is_pb')

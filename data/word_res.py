@@ -5,7 +5,7 @@ from .word import Word
 from .dict import Dict
 from flask import jsonify
 from .parser import word_parser
-from .constant import WD_FIELDS
+from .constant import US_FIELDS, WD_FIELDS, DC_FIELDS
 
 
 def abort_if_word_not_found(word_id):
@@ -20,10 +20,13 @@ class WordRes(Resource):
         abort_if_word_not_found(word_id)
         session = db_session.create_session()
         word = session.query(Word).get(word_id)
-        resp = word.to_dict(only=fields)
+        resp = word.to_dict(only=WD_FIELDS)
         user = session.query(User).get(resp['user_id'])
         del resp['user_id']
-        user = user.to_dict()
+        user = user.to_dict(only=US_FIELDS)
+        resp['user'] = user
+        dicts = session.query(Dict).all()
+        dicts = [dict.to_dict(only=DC_FIELDS) for dict in dicts]
         return jsonify({'message': 'ok', 'resp': {'word': resp}})
 #
 #     def delete(self, word_id):
@@ -65,7 +68,7 @@ class WordListRes(Resource):
                 'message': 'ok',
                 'resp': {
                     'words': [
-                        word.to_dict(only=fields) for word in words
+                        word.to_dict(only=WD_FIELDS) for word in words
                     ]
                 }
             }
