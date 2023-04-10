@@ -31,15 +31,15 @@ class DictRes(Resource):
             del word['user_id']
             resp['words'].append(word)
         return jsonify({'message': 'ok', 'resp': {'dict': resp}})
-#
-#     def delete(self, dictionary_id):
-#         abort_if_dictionary_not_found(dictionary_id)
-#         db_sess = db_session.create_session()
-#         dictionary = db_sess.query(Dictionary).get(dictionary_id)
-#         db_sess.delete(dictionary)
-#         db_sess.commit()
-#         return jsonify({'success': 'ok'})
-#
+
+    def delete(self, dict_id):
+        abort_if_dict_not_found(dict_id)
+        session = db_session.create_session()
+        dict = session.query(Dict).get(dict_id)
+        session.delete(dict)
+        session.commit()
+        return jsonify({'message': 'ok'})
+
 #     def put(self, dictionary_id):
 #         abort_if_dictionary_not_found(dictionary_id)
 #         db_sess = db_session.create_session()
