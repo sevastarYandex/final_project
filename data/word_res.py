@@ -26,7 +26,12 @@ class WordRes(Resource):
         user = user.to_dict(only=US_FIELDS)
         resp['user'] = user
         dicts = session.query(Dict).all()
-        dicts = [dict.to_dict(only=DC_FIELDS) for dict in dicts]
+        dicts = [dict.to_dict(only=DC_FIELDS) for dict in dicts
+                 if word_id in list(map(int, dict.wd_ids.split(', ')))]
+        for i in range(len(dicts)):
+            dict = dicts[i]
+            dict['wd_ids'] = list(map(int, dict['wd_ids'].split(', ')))
+            dicts[i] = dict
         return jsonify({'message': 'ok', 'resp': {'word': resp}})
 #
 #     def delete(self, word_id):
