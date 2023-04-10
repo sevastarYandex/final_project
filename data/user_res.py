@@ -25,7 +25,6 @@ class UserRes(Resource):
         ))
         for i in range(len(words)):
             word = words[i]
-            del word['user_id']
             words[i] = word
         resp['words'] = words
         dicts = list(map(
@@ -35,7 +34,6 @@ class UserRes(Resource):
         for i in range(len(dicts)):
             dict = dicts[i]
             dict['wd_ids'] = list(map(int, dict['wd_ids'].split(', ')))
-            del dict['user_id']
             dicts[i] = dict
         resp['dicts'] = dicts
         return jsonify({'message': 'ok', 'resp': {'user': resp}})
