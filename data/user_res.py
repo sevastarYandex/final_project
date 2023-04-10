@@ -2,6 +2,8 @@ from flask_restful import abort, Resource
 from flask import jsonify
 from . import db_session
 from .user import User
+from .word import Word
+from .dict import Dict
 from .parser import user_parser
 from .constant import US_FIELDS, WD_FIELDS, DC_FIELDS
 
@@ -21,12 +23,14 @@ class UserRes(Resource):
         resp = user.to_dict(only=US_FIELDS)
         words = list(map(
             lambda x: x.to_dict(only=WD_FIELDS),
-            user.words
+            session.query(Word).filter(
+                (Word.user_id == user_id) | (Word.is_pb == True)).all()
         ))
         resp['words'] = words
         dicts = list(map(
             lambda x: x.to_dict(only=DC_FIELDS),
-            user.dicts
+            session.query(Dict).filter(
+                (Dict.user_id == user_id) | (Dict.is_pb == True)).all()
         ))
         for i in range(len(dicts)):
             dict = dicts[i]
