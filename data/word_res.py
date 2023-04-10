@@ -5,7 +5,7 @@ from .word import Word
 from .dict import Dict
 from flask import jsonify
 from .parser import word_parser
-fields = ('id', 'word', 'tr_list', 'user_id', 'is_pb')
+from .constant import WD_FIELDS
 
 
 def abort_if_word_not_found(word_id):

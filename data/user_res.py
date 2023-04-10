@@ -3,7 +3,7 @@ from flask import jsonify
 from . import db_session
 from .user import User
 from .parser import user_parser
-fields = ('id', 'nick', 'email', 'hashed_psw')
+from .constant import US_FIELDS
 
 
 def abort_if_user_not_found(user_id):
@@ -18,7 +18,7 @@ class UserRes(Resource):
         abort_if_user_not_found(user_id)
         session = db_session.create_session()
         user = session.query(User).get(user_id)
-        resp = user.to_dict(only=fields)
+        resp = user.to_dict(only=US_FIELDS)
         words = list(map(
             lambda x: x.to_dict(only=('id', 'word', 'tr_list', 'is_pb')),
             user.words
@@ -73,7 +73,7 @@ class UserListRes(Resource):
                 'message': 'ok',
                 'resp': {
                     'users': [
-                        user.to_dict(only=fields) for user in users
+                        user.to_dict(only=US_FIELDS) for user in users
                     ]
                 }
             }
