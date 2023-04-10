@@ -16,17 +16,12 @@ def abort_if_dict_not_found(dict_id):
 
 
 class DictRes(Resource):
-    def get(self, dictionary_id):
-        abort_if_dictionary_not_found(dictionary_id)
-        db_sess = db_session.create_session()
-        dictionary = db_sess.query(Dictionary).get(dictionary_id)
-        resp = dictionary.to_dict(only=fields)
-        words = list(map(
-            lambda x: db_sess.query(Word).get(int(x)).to_dict(only=('word',))['word'],
-            dictionary.to_dict(only=('word_id',))['word_id'].split(', ')))
-        del resp['word_id']
-        resp['words'] = words
-        return jsonify({'dictionary': resp})
+    def get(self, dict_id):
+        abort_if_dict_not_found(dict_id)
+        session = db_session.create_session()
+        dict = session.query(Dict).get(dict_id)
+        resp = dict.to_dict(only=DC_FIELDS)
+        return jsonify({'message': 'ok', 'resp': {'dict': resp}})
 #
 #     def delete(self, dictionary_id):
 #         abort_if_dictionary_not_found(dictionary_id)
@@ -66,11 +61,15 @@ class DictRes(Resource):
 #
 class DictListRes(Resource):
     def get(self):
-        db_sess = db_session.create_session()
-        dictionaries = db_sess.query(Dictionary).all()
-        return jsonify({'dictionaries':
-                            [dictionary.to_dict(only=fields)
-                             for dictionary in dictionaries]})
+        session = db_session.create_session()
+        dicts = session.query(Dict).all()
+        return jsonify(
+            {
+                'dicts': [
+                    dict.to_dict(only=DC_FIELDS) for dict in dicts
+                ]
+            }
+        )
 
 #     def post(self):
 #         args = dictionary_parser.parse_args()
