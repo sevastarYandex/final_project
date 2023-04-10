@@ -58,15 +58,15 @@ def main():
     try:
         init_data()
     except Exception:
-        print('error: please close database in other apps')
+        print('message: please close database in other apps')
         exit(0)
     api = Api(app)
-    api.add_resource(UserResource, '/api/user/<int:user_id>')
-    api.add_resource(UserListResource, '/api/user')
-    api.add_resource(WordResource, '/api/word/<int:word_id>')
-    api.add_resource(WordListResource, '/api/word')
-    api.add_resource(DictionaryResource, '/api/dictionary/<int:dictionary_id>')
-    api.add_resource(DictionaryListResource, '/api/dictionary')
+    api.add_resource(UserRes, '/api/user/<int:user_id>')
+    api.add_resource(UserListRes, '/api/user')
+    api.add_resource(WordRes, '/api/word/<int:word_id>')
+    api.add_resource(WordListRes, '/api/word')
+    api.add_resource(DictRes, '/api/dict/<int:dict_id>')
+    api.add_resource(DictListRes, '/api/dict')
     app.run(port=8080, host='127.0.0.1')
 
 
