@@ -58,16 +58,9 @@ class WordRes(Resource):
                                            Word.user_id == word.user_id).all():
             return jsonify({'message': f'user with id={word.user_id} already has '
                                        f'word "{args["word"]}"'})
-        id = word.id
-        user_id = word.user_id
-        session.delete(word)
-        word = Word()
-        word.id = id
-        word.user_id = user_id
         word.word = args['word']
         word.tr_list = args['tr_list']
         word.is_pb = args['is_pb']
-        session.add(word)
         session.commit()
         return jsonify({'message': 'ok'})
 

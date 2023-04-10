@@ -57,14 +57,9 @@ class UserRes(Resource):
                 session.query(User).filter(User.email == args['email']).all():
             return jsonify({'message':
                                 f'user with email="{args["email"]}" already exists'})
-        id = user.id
-        session.delete(user)
-        user = User()
-        user.id = id
         user.nick = args['nick']
         user.email = args['email']
         user.set_psw(args['psw'])
-        session.add(user)
         session.commit()
         return jsonify({'message': 'ok'})
 
