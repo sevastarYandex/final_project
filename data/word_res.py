@@ -32,6 +32,7 @@ class WordRes(Resource):
             dict = dicts[i]
             dict['wd_ids'] = list(map(int, dict['wd_ids'].split(', ')))
             dicts[i] = dict
+        resp['dicts'] = dicts
         return jsonify({'message': 'ok', 'resp': {'word': resp}})
 #
 #     def delete(self, word_id):
