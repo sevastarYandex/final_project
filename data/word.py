@@ -1,25 +1,24 @@
-import sqlalchemy
 from .db_session import SqlAlchemyBase
 from sqlalchemy_serializer import SerializerMixin
-from sqlalchemy import orm
+from sqlalchemy import orm, Column, Integer, String, ForeignKey, Boolean
 
 
 class Word(SqlAlchemyBase, SerializerMixin):
     __tablename__ = 'word'
-    id = sqlalchemy.Column(
-        sqlalchemy.Integer,
+    id = Column(
+        Integer,
         primary_key=True,
         autoincrement=True,
         nullable=False
     )
-    word = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    tr_list = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    user_id = sqlalchemy.Column(
-        sqlalchemy.Integer,
-        sqlalchemy.ForeignKey('user.id'),
+    word = Column(String, nullable=False)
+    tr_list = Column(String, nullable=False)
+    user_id = Column(
+        Integer,
+        ForeignKey('user.id'),
         nullable=False
     )
-    is_pb = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
+    is_pb = Column(Boolean, nullable=False)
     user = orm.relationship('User')
 
     def __repr__(self):
