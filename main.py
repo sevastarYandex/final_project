@@ -1,3 +1,4 @@
+import sqlalchemy.orm
 from flask import Flask, render_template, redirect, make_response, jsonify
 from flask_login import LoginManager
 from flask_restful import Api
@@ -72,4 +73,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    help(sqlalchemy.orm.relationship)
