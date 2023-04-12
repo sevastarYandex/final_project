@@ -2,7 +2,7 @@ import sqlalchemy.orm
 from test import mpt
 from requests import get, delete, post, put
 from flask import Flask, render_template, redirect, make_response, jsonify
-from flask_login import LoginManager, login_user, logout_user, login_required
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_restful import Api
 from data import db_session
 from data import constant
@@ -90,7 +90,15 @@ def main():
 @app.route('/')
 @app.route('/welcome')
 def welcome():
-    return render_template('welcome.html', title='YPDict')
+    # if current_user.is_authenticated:
+    if True:
+        # info = mpt(f'user/{current_user.id}', get)['resp']['user']
+        info = mpt(f'user/{1}', get)['resp']['user']
+        my_words = list(map(
+            lambda x: [f'{x["word"]} - {x["tr_list"]}', f'/word/{x["id"]}'],
+            filter(lambda y: y["user_id"] == 1, info['words'])))
+        print(my_words)
+    return render_template('welcome.html', title='YPDictionary')
 
 
 if __name__ == '__main__':
