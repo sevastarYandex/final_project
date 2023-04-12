@@ -96,15 +96,21 @@ def welcome():
     if True:
         user_id = 1
         info = mpt(f'user/{user_id}', get)['resp']['user']
-        user_words = list(map(lambda x: f'{x["word"]} - {x["tr_list"]}', info['user_words']))
-        other_words = list(map(lambda x: f'{x["word"]} - {x["tr_list"]}', info['other_words']))
-        user_dicts = list(map(lambda x: f'{x["title"]} - {x["desc"]}', info['user_dicts']))
-        other_dicts = list(map(lambda x: f'{x["title"]} - {x["desc"]}', info['other_dicts']))
-        print(my_words)
-        print(other_words)
-        print(my_dicts)
-        print(other_dicts)
-    return render_template('welcome.html', title=constant.TITLE)
+        user_words = list(map(lambda x:
+                              [f'{x["word"]} - {x["tr_list"]}', f'/word/{x["id"]}'],
+                              info['user_words']))
+        other_words = list(map(lambda x:
+                               [f'{x["word"]} - {x["tr_list"]}', f'/word/{x["id"]}'],
+                               info['other_words']))
+        user_dicts = list(map(lambda x:
+                              [f'{x["title"]} - {x["desc"]}', f'/dict/{x["id"]}'],
+                              info['user_dicts']))
+        other_dicts = list(map(lambda x:
+                               [f'{x["title"]} - {x["desc"]}', f'/dict/{x["id"]}'],
+                               info['other_dicts']))
+    return render_template('welcome.html', title=constant.TITLE,
+                           user_words=user_words, other_words=other_words,
+                           user_dicts=user_dicts, other_dicts=other_dicts)
 
 
 if __name__ == '__main__':
