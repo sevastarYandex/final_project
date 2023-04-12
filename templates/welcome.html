@@ -1,7 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="alert alert-dark" style="text-indent: 25px; font-size: 25px">User words</div>
-<div class="alert alert-dark" style="text-indent: 25px; font-size: 25px">Other users words</div>
-<div class="alert alert-dark" style="text-indent: 25px; font-size: 25px">User dictionaries</div>
-<div class="alert alert-dark" style="text-indent: 25px; font-size: 25px">Other users dictionaries</div>
+{% for obj in data %}
+<div class="alert alert-success" role="alert"><h4>{{ obj[0] }}</h4></div>
+<ul>
+    {% for smt in obj[1] %}
+    <li><a class="navbar-brand" href={{ smt[1] }}>{{ smt[0] }}</a></li>
+    {% endfor %}
+</ul>
+{% if obj[1] == [] %}
+<div class="alert alert-warning" role="alert"><h5>List is empty</h5></div>
+{% endif %}
+{% endfor %}
 {% endblock %}

@@ -108,9 +108,11 @@ def welcome():
         other_dicts = list(map(lambda x:
                                [f'{x["title"]} - {x["desc"]}', f'/dict/{x["id"]}'],
                                info['other_dicts']))
-    return render_template('welcome.html', title=constant.TITLE,
-                           user_words=user_words, other_words=other_words,
-                           user_dicts=user_dicts, other_dicts=other_dicts)
+        data = [['Your words', user_words],
+                ['Other users words', other_words],
+                ['Your dictionaries', user_dicts],
+                ['Other users dictionaries', other_dicts]]
+    return render_template('welcome.html', title=constant.TITLE, data=data)
 
 
 if __name__ == '__main__':
