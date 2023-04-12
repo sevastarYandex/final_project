@@ -44,6 +44,10 @@ class UserRes(Resource):
         session = db_session.create_session()
         user = session.query(User).get(user_id)
         session.delete(user)
+        for word in session.query(Word).filter(Word.user_id == user_id).all():
+            session.delete(word)
+        for dict in session.query(Dict).filter(Dict.user_id == user_id).all():
+            session.delete(dict)
         session.commit()
         return jsonify({'message': 'ok'})
 
