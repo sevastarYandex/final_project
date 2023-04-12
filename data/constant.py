@@ -6,3 +6,4 @@ API_SITE = 'http://127.0.0.1:8080/api/'
 US_FIELDS = ('id', 'nick', 'email', 'hashed_psw')
 WD_FIELDS = ('id', 'word', 'tr_list', 'user_id', 'is_pb')
 DC_FIELDS = ('id', 'title', 'desc', 'wd_ids', 'user_id', 'is_pb')
+TITLE = 'YPDictionary'

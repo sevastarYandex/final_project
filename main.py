@@ -50,29 +50,30 @@ def init_data():
     except Exception:
         print('message: database is opened in ohter apps')
         exit(0)
-    # session = db_session.create_session()
-    # user = User()
-    # user.id = 1
-    # user.nick = 'admin228'
-    # user.email = 'admin228@gmail.com'
-    # user.set_psw('__admin228__')
-    # session.add(user)
-    # word = Word()
-    # word.id = 1
-    # word.word = 'word'
-    # word.tr_list = 'слово'
-    # word.user_id = 1
-    # word.is_pb = True
-    # session.add(word)
-    # dict = Dict()
-    # dict.id = 1
-    # dict.title = 'my dictionary'
-    # dict.desc = 'cool dictionary'
-    # dict.wd_ids = '1'
-    # dict.user_id = 1
-    # dict.is_pb = True
-    # session.add(dict)
-    # session.commit()
+    session = db_session.create_session()
+    if not session.query(User).get(1):
+        user = User()
+        user.id = 1
+        user.nick = 'admin228'
+        user.email = 'admin228@gmail.com'
+        user.set_psw('__admin228__')
+        session.add(user)
+        word = Word()
+        word.id = 1
+        word.word = 'word'
+        word.tr_list = 'слово'
+        word.user_id = 1
+        word.is_pb = True
+        session.add(word)
+        dict = Dict()
+        dict.id = 1
+        dict.title = 'my dictionary'
+        dict.desc = 'cool dictionary'
+        dict.wd_ids = '1'
+        dict.user_id = 1
+        dict.is_pb = True
+        session.add(dict)
+        session.commit()
 
 
 def main():
@@ -90,15 +91,7 @@ def main():
 @app.route('/')
 @app.route('/welcome')
 def welcome():
-    # if current_user.is_authenticated:
-    if True:
-        # info = mpt(f'user/{current_user.id}', get)['resp']['user']
-        info = mpt(f'user/{1}', get)['resp']['user']
-        my_words = list(map(
-            lambda x: [f'{x["word"]} - {x["tr_list"]}', f'/word/{x["id"]}'],
-            filter(lambda y: y["user_id"] == 1, info['words'])))
-        print(my_words)
-    return render_template('welcome.html', title='YPDictionary')
+    return render_template('welcome.html', title=constant.TITLE)
 
 
 if __name__ == '__main__':
