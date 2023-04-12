@@ -73,5 +73,4 @@ def main():
 
 
 if __name__ == '__main__':
-    # main()
-    help(sqlalchemy.orm.relationship)
+    main()
