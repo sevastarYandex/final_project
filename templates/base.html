@@ -12,11 +12,11 @@
             <div class="alert alert-info" role="alert" style="font-size: 30px; text-align: center">
                 YPDict - Your Personal Dictionary<br>
             {% if current_user.is_authenticated %}
-                <a class="btn btn-primary " href="/">{{ current_user.nick }} page</a>
-                <a class="btn btn-success" href="/">Log out</a>
+                <a class="btn btn-primary " href="/user/{{ current_user.id }}">{{ current_user.nick }} page</a>
+                <a class="btn btn-success" href="/logout">Log out</a>
             {% else %}
-                <a class="btn btn-primary " href="/">Log in</a>
-                <a class="btn btn-success" href="/">Sign in</a>
+                <a class="btn btn-primary " href="/login">Log in</a>
+                <a class="btn btn-success" href="/signin">Sign in</a>
             {% endif %}
             <a class="btn btn-warning" href="/">Main page</a>
             </div>
