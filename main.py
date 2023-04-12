@@ -97,22 +97,31 @@ def welcome():
         user_id = 1
         info = mpt(f'user/{user_id}', get)['resp']['user']
         user_words = list(map(lambda x:
-                              [f'{x["word"]} - {x["tr_list"]}', f'/api/word/{x["id"]}'],
+                              [f'{x["word"]} - {x["tr_list"]}', f'/word/{x["id"]}'],
                               info['user_words']))
         other_words = list(map(lambda x:
-                               [f'{x["word"]} - {x["tr_list"]}', f'/api/word/{x["id"]}'],
+                               [f'{x["word"]} - {x["tr_list"]}', f'/word/{x["id"]}'],
                                info['other_words']))
         user_dicts = list(map(lambda x:
-                              [f'{x["title"]} - {x["desc"]}', f'/api/dict/{x["id"]}'],
+                              [f'{x["title"]} - {x["desc"]}', f'/dict/{x["id"]}'],
                               info['user_dicts']))
         other_dicts = list(map(lambda x:
-                               [f'{x["title"]} - {x["desc"]}', f'/api/dict/{x["id"]}'],
+                               [f'{x["title"]} - {x["desc"]}', f'/dict/{x["id"]}'],
                                info['other_dicts']))
         data = [['Your words', user_words],
                 ['Other users words', other_words],
                 ['Your dictionaries', user_dicts],
                 ['Other users dictionaries', other_dicts]]
     return render_template('welcome.html', title=constant.TITLE, data=data)
+
+#
+# @app.route('/user/<int:user_id>')
+# def user_page(user_id):
+#     if current_user.id == user_id:
+#         info = mpt(f'/api/user/{user_id}', get)['resp']['user']
+#         data = [['Nickname'], ['Email'], []]
+#     else:
+
 
 
 if __name__ == '__main__':
