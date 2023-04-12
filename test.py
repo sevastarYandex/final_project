@@ -1,18 +1,15 @@
 from requests import get, put, post, delete
 from pprint import pprint
+from data.constant import API_SITE
 
-necc = 'http://127.0.0.1:8080'
 
-
-def mpt(par, fun, params=None, if_p=True):
+def mpt(par, fun, params=None):
     if params is None:
         params = {}
     if params:
         params = {'json': params}
-    if not if_p:
-        return fun(necc + par, **params).json()
-    pprint(fun(necc + par, **params).json())
-    print('-' * 30)
+    res = fun(API_SITE + par, **params).json()
+    return res
 
 #
 # def user_api():

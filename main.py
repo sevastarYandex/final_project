@@ -1,6 +1,6 @@
 import sqlalchemy.orm
 from flask import Flask, render_template, redirect, make_response, jsonify
-from flask_login import LoginManager
+from flask_login import LoginManager, login_user, logout_user, login_required
 from flask_restful import Api
 from data import db_session
 from data import constant
@@ -27,6 +27,19 @@ def not_found(_):
 @app.errorhandler(400)
 def bad_request(_):
     return make_response(jsonify({'message': 'bad request'}), 400)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    session = db_session.create_session()
+    return session.query(User).get(user_id)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect('/')
 
 
 def init_data():
@@ -70,6 +83,12 @@ def main():
     api.add_resource(DictRes, '/api/dict/<int:dict_id>')
     api.add_resource(DictListRes, '/api/dict')
     app.run(port=constant.PORT, host=constant.HOST)
+
+
+@app.route('/')
+@app.route('/welcome')
+def welcome():
+    return render_template('welcome.html', title='YPDict')
 
 
 if __name__ == '__main__':
