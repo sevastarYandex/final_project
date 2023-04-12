@@ -91,6 +91,19 @@ def main():
 @app.route('/')
 @app.route('/welcome')
 def welcome():
+    # if current_user.is_authenticated:
+    #     user_id = current_user.user_id
+    if True:
+        user_id = 1
+        info = mpt(f'user/{user_id}', get)['resp']['user']
+        user_words = list(map(lambda x: f'{x["word"]} - {x["tr_list"]}', info['user_words']))
+        other_words = list(map(lambda x: f'{x["word"]} - {x["tr_list"]}', info['other_words']))
+        user_dicts = list(map(lambda x: f'{x["title"]} - {x["desc"]}', info['user_dicts']))
+        other_dicts = list(map(lambda x: f'{x["title"]} - {x["desc"]}', info['other_dicts']))
+        print(my_words)
+        print(other_words)
+        print(my_dicts)
+        print(other_dicts)
     return render_template('welcome.html', title=constant.TITLE)
 
 
