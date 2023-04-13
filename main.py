@@ -12,7 +12,7 @@ from data.dict import Dict
 from data.user_res import UserRes, UserListRes
 from data.word_res import WordRes, WordListRes
 from data.dict_res import DictRes, DictListRes
-from forms.user import LoginForm
+from forms.user import LoginForm, SigninForm
 
 
 app = Flask(__name__)
@@ -135,6 +135,29 @@ def login():
                                message='wrong login or password',
                                form=form)
     return render_template('login.html', title=constant.TITLE, form=form)
+
+
+@app.route('/signin', methods=['GET', 'POST'])
+def signin():
+    form = SigninForm()
+    if form.validate_on_submit():
+        if form.password.data != form.password_again.data:
+            return render_template('signin.html', title=constant.TITLE,
+                                   form=form,
+                                   message="passwords are not equal")
+        session = db_session.create_session()
+        if session.query(User).filter(User.email == form.email.data).first():
+            return render_template('signin.html', title=constant.TITLE,
+                                   form=form,
+                                   message='email is already used')
+        user = User()
+        user.nick = form.nick.data
+        user.email = form.email.data
+        user.set_psw(form.password.data)
+        session.add(user)
+        session.commit()
+        return redirect('/login')
+    return render_template('signin.html', title=constant.TITLE, form=form)
 
 
 if __name__ == '__main__':
