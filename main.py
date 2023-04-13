@@ -12,6 +12,7 @@ from data.dict import Dict
 from data.user_res import UserRes, UserListRes
 from data.word_res import WordRes, WordListRes
 from data.dict_res import DictRes, DictListRes
+from forms.user import LoginForm
 
 
 app = Flask(__name__)
@@ -93,7 +94,7 @@ def main():
 def welcome():
     session = db_session.create_session()
     if current_user.is_authenticated:
-        user_id = current_user.user_id
+        user_id = current_user.id
     else:
         user_id = -1
     user_words = list(map(lambda x:
@@ -128,10 +129,10 @@ def login():
         session = db_session.create_session()
         user = session.query(User).filter(User.email == form.email.data).first()
         if user and user.check_psw(form.password.data):
-            login_user(user, remember=form.remb.data)
+            login_user(user)
             return redirect('/')
         return render_template('login.html',
-                               message='Wrong login or password',
+                               message='wrong login or password',
                                form=form)
     return render_template('login.html', title=constant.TITLE, form=form)
 
