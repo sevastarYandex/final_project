@@ -175,7 +175,7 @@ def user_page(user_id):
     else:
         words = session.query(Word).filter(Word.user_id == user_id, Word.is_pb).all()
         words = list(map(lambda x:
-                         [f'{x.words} (owner - {session.query(User).get(x.user_id).nick})',
+                         [f'{x.word} (owner - {session.query(User).get(x.user_id).nick})',
                           f'/word/{x.id}'], words))
         dicts = session.query(Dict).filter(Dict.user_id == user_id, Dict.is_pb).all()
         dicts = list(map(lambda x:
