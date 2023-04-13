@@ -166,7 +166,23 @@ def user_page(user_id):
     user = session.query(User).get(user_id)
     if not user:
         return render_template('base.html', message=f'user with id={user_id} is not found')
-    return render_template('user_page.html', title=constant.TITLE)
+    data = [user.id, user.nick, user.email]
+    if current_user.id == user_id:
+        words = session.query(Word).filter(Word.user_id == user_id).all()
+        words = list(map(lambda x: [f'{x.word} - {x.tr_list}', f'/word/{x.id}'], words))
+        dicts = session.query(Dict).filter(Dict.user_id == user_id).all()
+        dicts = list(map(lambda x: [f'{x.title} - {x.desc}', f'/dict/{x.id}'], dicts))
+    else:
+        words = session.query(Word).filter(Word.user_id == user_id, Word.is_pb).all()
+        words = list(map(lambda x:
+                         [f'{x.words} (owner - {session.query(User).get(x.user_id).nick})',
+                          f'/word/{x.id}'], words))
+        dicts = session.query(Dict).filter(Dict.user_id == user_id, Dict.is_pb).all()
+        dicts = list(map(lambda x:
+                         [f'{x.title} (owner - {session.query(User).get(x.user_id).nick})',
+                          f'/dict/{x.id}'], dicts))
+    return render_template('user_page.html',
+                           title=constant.TITLE, data=data, words=words, dicts=dicts)
 
 
 if __name__ == '__main__':
