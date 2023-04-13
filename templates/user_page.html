@@ -1,4 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
-
+<div class="alert alert-primary" role="alert"><h2>Profile of the user with id={{ data[0] }}</h2></div>
+<div class="alert alert-secondary" role="alert"><h3>Nickname - {{ data[1] }}</h3></div>
+<div class="alert alert-dark" role="alert"><h3>Email - {{ data[2] }}</h3></div>
+<br>
+<div class="alert alert-success" role="alert"><h4>User words</h4></div>
+<ul>
+    {% for smt in words %}
+    <li><a class="navbar-brand" href={{ smt[1] }}>{{ smt[0] }}</a></li>
+    {% endfor %}
+</ul>
+{% if words == [] %}
+<div class="alert alert-warning" role="alert"><h5>List is empty</h5></div>
+{% endif %}
+<div class="alert alert-success" role="alert"><h4>User dicts</h4></div>
+<ul>
+    {% for smt in dicts %}
+    <li><a class="navbar-brand" href={{ smt[1] }}>{{ smt[0] }}</a></li>
+    {% endfor %}
+</ul>
+{% if dicts == [] %}
+<div class="alert alert-warning" role="alert"><h5>List is empty</h5></div>
+{% endif %}
 {% endblock %}
