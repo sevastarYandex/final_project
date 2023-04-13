@@ -121,5 +121,20 @@ def welcome():
     return render_template('welcome.html', title=constant.TITLE, data=data)
 
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        session = db_session.create_session()
+        user = session.query(User).filter(User.email == form.email.data).first()
+        if user and user.check_psw(form.password.data):
+            login_user(user, remember=form.remb.data)
+            return redirect('/')
+        return render_template('login.html',
+                               message='Wrong login or password',
+                               form=form)
+    return render_template('login.html', title=constant.TITLE, form=form)
+
+
 if __name__ == '__main__':
     main()
