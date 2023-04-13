@@ -179,12 +179,10 @@ def user_page(user_id):
     else:
         words = session.query(Word).filter(Word.user_id == user_id, Word.is_pb).all()
         words = list(map(lambda x:
-                         [f'{x.word} (owner - {session.query(User).get(x.user_id).nick})',
-                          f'/word/{x.id}'], words))
+                         [x.word, f'/word/{x.id}'], words))
         dicts = session.query(Dict).filter(Dict.user_id == user_id, Dict.is_pb).all()
         dicts = list(map(lambda x:
-                         [f'{x.title} (owner - {session.query(User).get(x.user_id).nick})',
-                          f'/dict/{x.id}'], dicts))
+                         [x.title, f'/dict/{x.id}'], dicts))
     return render_template('user_page.html',
                            title=constant.TITLE, data=data, words=words, dicts=dicts)
 
