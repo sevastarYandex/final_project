@@ -156,7 +156,7 @@ def signin():
         user.set_psw(form.password.data)
         session.add(user)
         session.commit()
-        return redirect('/login')
+        return redirect('/')
     return render_template('signin.html', title=constant.TITLE, form=form)
 
 
