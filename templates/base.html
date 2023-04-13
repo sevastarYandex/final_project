@@ -20,8 +20,12 @@
             {% endif %}
             <a class="btn btn-warning" href="/">Main page</a>
             </div>
+            <p>
+                {% if message %}
+                    <div class="alert alert-warning" role="alert">{{ message }}</div>
+                {% endif %}
             <main role="main" class="container">
                 {% block content %}{% endblock %}
             </main>
-        </body>
+            </body>
     </html>

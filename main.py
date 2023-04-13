@@ -90,8 +90,8 @@ def main():
 
 
 @app.route('/')
-@app.route('/welcome')
-def welcome():
+@app.route('/<message>')
+def welcome(message=False):
     session = db_session.create_session()
     if current_user.is_authenticated:
         user_id = current_user.id
@@ -119,7 +119,7 @@ def welcome():
                 ['Public words', pb_words],
                 ['Your dictionaries', user_dicts],
                 ['Public dictionaries', pb_dicts]]
-    return render_template('welcome.html', title=constant.TITLE, data=data)
+    return render_template('welcome.html', title=constant.TITLE, data=data, message=message)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -130,7 +130,7 @@ def login():
         user = session.query(User).filter(User.email == form.email.data).first()
         if user and user.check_psw(form.password.data):
             login_user(user)
-            return redirect('/')
+            return redirect(f'/authorization is successful')
         return render_template('login.html',
                                message='wrong login or password',
                                form=form)
@@ -156,8 +156,17 @@ def signin():
         user.set_psw(form.password.data)
         session.add(user)
         session.commit()
-        return redirect('/')
+        return redirect(f'/registration is successful')
     return render_template('signin.html', title=constant.TITLE, form=form)
+
+
+@app.route('/user/<int:user_id>')
+def user_page(user_id):
+    session = db_session.create_session()
+    user = session.query(User).get(user_id)
+    if not user:
+        return render_template('base.html', message=f'user with id={user_id} is not found')
+    return render_template('user_page.html', title=constant.TITLE)
 
 
 if __name__ == '__main__':
