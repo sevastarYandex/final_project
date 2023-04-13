@@ -91,37 +91,34 @@ def main():
 @app.route('/')
 @app.route('/welcome')
 def welcome():
-    # if current_user.is_authenticated:
-    #     user_id = current_user.user_id
-    if True:
-        user_id = 1
-        info = mpt(f'user/{user_id}', get)['resp']['user']
-        user_words = list(map(lambda x:
-                              [f'{x["word"]} - {x["tr_list"]}', f'/word/{x["id"]}'],
-                              info['user_words']))
-        other_words = list(map(lambda x:
-                               [f'{x["word"]} - {x["tr_list"]}', f'/word/{x["id"]}'],
-                               info['other_words']))
-        user_dicts = list(map(lambda x:
-                              [f'{x["title"]} - {x["desc"]}', f'/dict/{x["id"]}'],
-                              info['user_dicts']))
-        other_dicts = list(map(lambda x:
-                               [f'{x["title"]} - {x["desc"]}', f'/dict/{x["id"]}'],
-                               info['other_dicts']))
+    session = db_session.create_session()
+    if current_user.is_authenticated:
+        user_id = current_user.user_id
+    else:
+        user_id = -1
+    user_words = list(map(lambda x:
+                          [f'{x.word} - {x.tr_list}', f'/word/{x.id}'],
+                          session.query(Word).filter(Word.user_id == user_id).all()))
+    user_dicts = list(map(lambda x:
+                          [f'{x.title} - {x.desc}', f'/dict/{x.id}'],
+                          session.query(Dict).filter(Dict.user_id == user_id).all()))
+    pb_words = list(map(lambda x: [f'{x.word} '
+                                   f'(owner - {session.query(User).get(x.user_id).nick})',
+                                   f'/word/{x.id}'],
+                        session.query(Word).filter(Word.is_pb, Word.user_id != user_id).all()))
+    pb_dicts = list(map(lambda x: [f'{x.title} '
+                                   f'(owner - {session.query(User).get(x.user_id).nick})',
+                                   f'/dict/{x.id}'],
+                        session.query(Dict).filter(Dict.is_pb, Dict.user_id != user_id).all()))
+    if user_id == -1:
+        data = [['Public words', pb_words],
+                ['Public dictionaries', pb_dicts]]
+    else:
         data = [['Your words', user_words],
-                ['Other users words', other_words],
+                ['Public words', pb_words],
                 ['Your dictionaries', user_dicts],
-                ['Other users dictionaries', other_dicts]]
+                ['Public dictionaries', pb_dicts]]
     return render_template('welcome.html', title=constant.TITLE, data=data)
-
-#
-# @app.route('/user/<int:user_id>')
-# def user_page(user_id):
-#     if current_user.id == user_id:
-#         info = mpt(f'/api/user/{user_id}', get)['resp']['user']
-#         data = [['Nickname'], ['Email'], []]
-#     else:
-
 
 
 if __name__ == '__main__':
