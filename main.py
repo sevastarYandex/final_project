@@ -167,7 +167,11 @@ def user_page(user_id):
     if not user:
         return render_template('base.html', message=f'user with id={user_id} is not found')
     data = [user.id, user.nick, user.email]
-    if current_user.id == user_id:
+    if current_user.is_authenticated:
+        current_id = current_user.id
+    else:
+        current_id = -1
+    if current_id == user_id:
         words = session.query(Word).filter(Word.user_id == user_id).all()
         words = list(map(lambda x: [f'{x.word} - {x.tr_list}', f'/word/{x.id}'], words))
         dicts = session.query(Dict).filter(Dict.user_id == user_id).all()
