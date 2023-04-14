@@ -187,5 +187,32 @@ def user_page(user_id):
                            title=constant.TITLE, data=data, words=words, dicts=dicts)
 
 
+@app.route('/word/<int:word_id>')
+def word_page(word_id):
+    session = db_session.create_session()
+    word = session.query(Word).get(word_id)
+    if not word:
+        return render_template('base.html', message=f'word with id={word_id} is not found')
+    if current_user.is_authenticated:
+        current_id = current_user.id
+    else:
+        current_id = -1
+    if word.user_id != current_id and not word.is_pb:
+        return render_template('base.html', message=f'word with id={word_id} is private')
+    user = session.query(User).get(word.user_id)
+    data = [word.id, word.word, word.tr_list, word.is_pb]
+    user_link = [f'{user.nick}', f'/user/{word.user_id}']
+    dicts = session.query(Dict).filter((Dict.user_id == current_id) | Dict.is_pb).all()
+    for dict in dicts:
+        if word_id not in list(map(int, dict.wd_ids.split(', '))):
+            dicts.remove(dict)
+    dicts = list(map(lambda x:
+                     [x.title + f' - {x.desc}' * (x.user_id == current_id),
+                      f'/dict/{x.id}'],
+                     dicts))
+    return render_template('word_page.html',
+                           title=constant.TITLE, data=data, user=user_link, dicts=dicts)
+
+
 if __name__ == '__main__':
     main()

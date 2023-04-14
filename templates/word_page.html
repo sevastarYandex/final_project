@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="alert alert-primary" role="alert"><h2>Profile of the word with id={{ data[0] }}</h2></div>
+<div class="alert alert-secondary" role="alert"><h3>Word - {{ data[1] }}</h3></div>
+<div class="alert alert-dark" role="alert"><h3>Translation - {{ data[2] }}</h3></div>
+<div class="alert alert-light" role="alert"><h3>Is public - {{ data[3] }}</h3></div>
+<div class="alert alert-danger" role="alert"><a class="navbar-brand" href={{ user[1] }}>Owner - {{ user[0] }}</a></div>
+<br><br><br>
+<div class="alert alert-success" role="alert"><h4>Dicts</h4></div>
+<ul>
+    {% for smt in dicts %}
+    <li><a class="navbar-brand" href={{ smt[1] }}>{{ smt[0] }}</a></li>
+    {% endfor %}
+</ul>
+{% if dicts == [] %}
+<div class="alert alert-warning" role="alert"><h5>List is empty</h5></div>
+{% endif %}
+{% endblock %}
