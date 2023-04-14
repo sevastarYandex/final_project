@@ -42,7 +42,7 @@ def load_user(user_id):
 @login_required
 def logout():
     logout_user()
-    return redirect('/')
+    redirect('/status/logout is successful')
 
 
 def init_data():
@@ -89,9 +89,14 @@ def main():
     app.run(port=constant.PORT, host=constant.HOST)
 
 
+@app.route('/status/<message>')
+def status(message):
+    return render_template('base.html', title=constant.TITLE, message=message)
+
+
 @app.route('/')
-@app.route('/<message>')
-def welcome(message=False):
+@app.route('/welcome')
+def welcome():
     session = db_session.create_session()
     if current_user.is_authenticated:
         user_id = current_user.id
@@ -119,7 +124,7 @@ def welcome(message=False):
                 ['Public words', pb_words],
                 ['Your dictionaries', user_dicts],
                 ['Public dictionaries', pb_dicts]]
-    return render_template('welcome.html', title=constant.TITLE, data=data, message=message)
+    return render_template('welcome.html', title=constant.TITLE, data=data)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -130,7 +135,7 @@ def login():
         user = session.query(User).filter(User.email == form.email.data).first()
         if user and user.check_psw(form.password.data):
             login_user(user)
-            return redirect(f'/authorization is successful')
+            return redirect('/status/authorization is successful')
         return render_template('login.html',
                                message='wrong login or password',
                                form=form)
@@ -156,7 +161,7 @@ def signin():
         user.set_psw(form.password.data)
         session.add(user)
         session.commit()
-        return redirect(f'/registration is successful')
+        return redirect('/status/registration is successful')
     return render_template('signin.html', title=constant.TITLE, form=form)
 
 
@@ -165,7 +170,7 @@ def user_page(user_id):
     session = db_session.create_session()
     user = session.query(User).get(user_id)
     if not user:
-        return render_template('base.html', message=f'user with id={user_id} is not found')
+        return redirect(f'/status/user with id={user_id} is not found')
     data = [user.id, user.nick, user.email]
     if current_user.is_authenticated:
         current_id = current_user.id
@@ -192,13 +197,13 @@ def word_page(word_id):
     session = db_session.create_session()
     word = session.query(Word).get(word_id)
     if not word:
-        return render_template('base.html', message=f'word with id={word_id} is not found')
+        return redirect(f'/status/word with id={word_id} is not found')
     if current_user.is_authenticated:
         current_id = current_user.id
     else:
         current_id = -1
     if word.user_id != current_id and not word.is_pb:
-        return render_template('base.html', message=f'word with id={word_id} is private')
+        return redirect(f'/status/word with id={word_id} is private')
     user = session.query(User).get(word.user_id)
     data = [word.id, word.word, word.tr_list, word.is_pb, word.user_id]
     user_link = [user.nick, f'/user/{word.user_id}']
@@ -220,13 +225,13 @@ def dict_page(dict_id):
     session = db_session.create_session()
     dict = session.query(Dict).get(dict_id)
     if not dict:
-        return render_template('base.html', message=f'dict with id={dict_id} is not found')
+        return redirect(f'/status/dict with id={dict_id} is not found')
     if current_user.is_authenticated:
         current_id = current_user.id
     else:
         current_id = -1
     if dict.user_id != current_id and not dict.is_pb:
-        return render_template('base.html', message=f'dict with id={dict_id} is private')
+        return redirect(f'/status/dict with id={dict_id} is private')
     user = session.query(User).get(dict.user_id)
     data = [dict.id, dict.title, dict.desc, dict.is_pb, dict.user_id]
     user_link = [user.nick, f'/user/{dict.user_id}']
@@ -238,6 +243,54 @@ def dict_page(dict_id):
                      words))
     return render_template('dict_page.html',
                            title=constant.TITLE, data=data, user=user_link, words=words)
+
+
+@app.route('/edit_user/<int:user_id>', methods=['GET', 'PUT'])
+@login_required
+def edit_user(user_id):
+    return ''
+
+
+@app.route('/delete_user/<int:user_id>', methods=['GET', 'DELETE'])
+@login_required
+def delete_user(user_id):
+    return ''
+
+
+@app.route('/post_word', methods=['GET', 'POST'])
+@login_required
+def post_word():
+    return ''
+
+
+@app.route('/edit_word/<int:word_id>', methods=['GET', 'PUT'])
+@login_required
+def edit_word(word_id):
+    return ''
+
+
+@app.route('/delete_word/<int:word_id>', methods=['GET', 'DELETE'])
+@login_required
+def delete_word(word_id):
+    return ''
+
+
+@app.route('/post_dict', methods=['GET', 'POST'])
+@login_required
+def post_dict():
+    return ''
+
+
+@app.route('/edit_dict/<int:dict_id>', methods=['GET', 'PUT'])
+@login_required
+def edit_dict(dict_id):
+    return ''
+
+
+@app.route('/delete_dict/<int:dict_id>', methods=['GET', 'DELETE'])
+@login_required
+def delete_dict(dict_id):
+    return ''
 
 
 if __name__ == '__main__':
