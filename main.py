@@ -201,14 +201,15 @@ def word_page(word_id):
         return render_template('base.html', message=f'word with id={word_id} is private')
     user = session.query(User).get(word.user_id)
     data = [word.id, word.word, word.tr_list, word.is_pb]
-    user_link = [f'{user.nick}', f'/user/{word.user_id}']
+    user_link = [user.nick, f'/user/{word.user_id}']
     dicts = session.query(Dict).filter((Dict.user_id == current_id) | Dict.is_pb).all()
     for dict in dicts:
         if word_id not in list(map(int, dict.wd_ids.split(', '))):
             dicts.remove(dict)
     dicts = list(map(lambda x:
-                     [x.title + f' - {x.desc}' * (x.user_id == current_id),
-                      f'/dict/{x.id}'],
+                     [x.title + f' - {x.desc}' * (x.user_id == current_id) +
+                      f' (owner - {session.query(User).get(x.user_id).nick})' *
+                      (x.user_id != current_id), f'/dict/{x.id}'],
                      dicts))
     return render_template('word_page.html',
                            title=constant.TITLE, data=data, user=user_link, dicts=dicts)
@@ -225,17 +226,18 @@ def dict_page(dict_id):
     else:
         current_id = -1
     if dict.user_id != current_id and not dict.is_pb:
-        return render_template('base.html', message=f'dict with id={word_id} is private')
+        return render_template('base.html', message=f'dict with id={dict_id} is private')
     user = session.query(User).get(dict.user_id)
     data = [dict.id, dict.title, dict.desc, dict.is_pb]
-    user_link = [f'{user.nick}', f'/user/{dict.user_id}']
+    user_link = [user.nick, f'/user/{dict.user_id}']
     wd_ids = list(map(int, dict.wd_ids.split(', ')))
-    words = session.query(Word).filter(Word.id in wd_ids).all()
-    words = list(map(lambda x: [x.word + f' - {x.tr_list}' * (x.user_id == current_id),
-                                f'/word/{x.id}'],
+    words = session.query(Word).filter(Word.id.in_(wd_ids), (Word.user_id == current_id) | Word.is_pb).all()
+    words = list(map(lambda x: [x.word + f' - {x.tr_list}' * (x.user_id == current_id) +
+                                f' (owner - {session.query(User).get(x.user_id).nick})' *
+                                (x.user_id != current_id), f'/word/{x.id}'],
                      words))
     return render_template('dict_page.html',
-                           title=constant.TITLE, data=data, user=user_link, word=words)
+                           title=constant.TITLE, data=data, user=user_link, words=words)
 
 
 if __name__ == '__main__':
