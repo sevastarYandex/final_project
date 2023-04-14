@@ -272,12 +272,20 @@ def edit_user(user_id):
         return redirect(f'/status/{answer["message"]}')
     return render_template('edit_user.html', title='Edit user', form=form, user_id=user_id)
 
-#
-# @app.route('/delete_user/<int:user_id>', methods=['GET', 'DELETE'])
-# @login_required
-# def delete_user(user_id):
-#     return ''
-#
+
+@app.route('/delete_user/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def delete_user(user_id):
+    session = db_session.create_session()
+    if not session.query(User).get(user_id):
+        return redirect(f'/status/user with id={user_id} is not found')
+    if not current_user.is_authenticated:
+        return redirect('/status/access is denied')
+    if current_user.id != user_id:
+        return redirect('/status/access is denied')
+    mpt(f'user/{user_id}', delete)
+    return redirect('/status/deletion is successful')
+
 #
 # @app.route('/post_word', methods=['GET', 'POST'])
 # @login_required
