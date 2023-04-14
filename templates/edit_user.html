@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+    {% block content %}
+        <div class="alert alert-dark" role="alert"><h2>User profile editing</h2></div>
+        <form action="" method="post">
+        <p>
+            {{ form.hidden_tag() }}
+            <div class="alert alert-info" role="alert"><h4>{{ form.nick.label }}</h4></div>
+            {{ form.nick(class="form-control") }}
+            {% for error in form.nick.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        <p>
+            {{ form.hidden_tag() }}
+            <div class="alert alert-info" role="alert"><h4>{{ form.email.label }}</h4></div>
+            {{ form.email(class="form-control", type="email") }}
+            {% for error in form.email.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        <p>
+            <div class="alert alert-info" role="alert"><h4>{{ form.password.label }}</h4></div>
+            {{ form.password(class="form-control", type="password") }}
+            {% for error in form.password.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        <br>
+        <p>
+            {{ form.submit(type="submit", class="btn btn-primary") }}
+        </form>
+    {% endblock %}

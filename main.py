@@ -1,7 +1,7 @@
 import sqlalchemy.orm
 from test import mpt
 from requests import get, delete, post, put
-from flask import Flask, render_template, redirect, make_response, jsonify
+from flask import Flask, render_template, redirect, make_response, jsonify, request
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_restful import Api
 from data import db_session
@@ -12,7 +12,7 @@ from data.dict import Dict
 from data.user_res import UserRes, UserListRes
 from data.word_res import WordRes, WordListRes
 from data.dict_res import DictRes, DictListRes
-from forms.user import LoginForm, SigninForm
+from forms.user import LoginForm, SigninForm, EditForm
 
 
 app = Flask(__name__)
@@ -248,7 +248,27 @@ def dict_page(dict_id):
 @app.route('/edit_user/<int:user_id>', methods=['GET', 'PUT'])
 @login_required
 def edit_user(user_id):
-    return ''
+    session = db_session.create_session()
+    form = EditForm()
+    user = session.query(User).get(user_id)
+    if not user:
+        return redirect(f'/status/user with id={user_id} is not found')
+    if request.method == 'GET':
+        if not current_user.is_authenticated:
+            return redirect('/status/access is denied')
+        if current_user.id != user_id:
+            return redirect('/status/access is denied')
+        user = session.query(User).get(user_id)
+        form.nick = user.nick
+        form.email = user.email
+        form.password = user.email
+    if form.validate_on_submit():
+        answer = mpt(f'/api/user/{user_id}', put,
+                     {'nick': form.nick, 'email': form.email, 'psw': form.password})
+        if answer['message'] == 'ok':
+            return redirect('/status/changes are successful')
+        return redirect(f'/status/{answer["message"]}')
+    return render_template('edit_user.html', title=constant.TITLE, form=form)
 
 
 @app.route('/delete_user/<int:user_id>', methods=['GET', 'DELETE'])

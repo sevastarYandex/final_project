@@ -15,3 +15,10 @@ class SigninForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     password_again = PasswordField('Password again', validators=[DataRequired()])
     submit = SubmitField('Sign in')
+
+
+class EditForm(FlaskForm):
+    nick = StringField('Nickname', validators=[DataRequired()])
+    email = EmailField('Email', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Edit')
