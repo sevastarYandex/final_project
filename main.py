@@ -42,7 +42,7 @@ def load_user(user_id):
 @login_required
 def logout():
     logout_user()
-    redirect('/status/logout is successful')
+    return redirect('/status/logout is successful')
 
 
 def init_data():
