@@ -214,5 +214,29 @@ def word_page(word_id):
                            title=constant.TITLE, data=data, user=user_link, dicts=dicts)
 
 
+@app.route('/dict/<int:dict_id>')
+def dict_page(dict_id):
+    session = db_session.create_session()
+    dict = session.query(Dict).get(dict_id)
+    if not dict:
+        return render_template('base.html', message=f'dict with id={dict_id} is not found')
+    if current_user.is_authenticated:
+        current_id = current_user.id
+    else:
+        current_id = -1
+    if dict.user_id != current_id and not dict.is_pb:
+        return render_template('base.html', message=f'dict with id={word_id} is private')
+    user = session.query(User).get(dict.user_id)
+    data = [dict.id, dict.title, dict.desc, dict.is_pb]
+    user_link = [f'{user.nick}', f'/user/{dict.user_id}']
+    wd_ids = list(map(int, dict.wd_ids.split(', ')))
+    words = session.query(Word).filter(Word.id in wd_ids).all()
+    words = list(map(lambda x: [x.word + f' - {x.tr_list}' * (x.user_id == current_id),
+                                f'/word/{x.id}'],
+                     words))
+    return render_template('dict_page.html',
+                           title=constant.TITLE, data=data, user=user_link, word=words)
+
+
 if __name__ == '__main__':
     main()
