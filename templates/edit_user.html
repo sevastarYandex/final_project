@@ -1,6 +1,6 @@
 {% extends "base.html" %}
     {% block content %}
-        <div class="alert alert-dark" role="alert"><h2>User profile editing</h2></div>
+        <div class="alert alert-dark" role="alert"><h2>Editing of the user with id={{ user_id }}</h2></div>
         <form action="" method="post">
         <p>
             {{ form.hidden_tag() }}
@@ -30,6 +30,6 @@
             {% endfor %}
         <br>
         <p>
-            {{ form.submit(type="submit", class="btn btn-primary") }}
+            {{ form.submit(type="submit", class="btn btn-warning") }}
         </form>
     {% endblock %}

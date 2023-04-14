@@ -91,7 +91,7 @@ def main():
 
 @app.route('/status/<message>')
 def status(message):
-    return render_template('base.html', title=constant.TITLE, message=message)
+    return render_template('base.html', title='Action status', message=message)
 
 
 @app.route('/')
@@ -139,7 +139,7 @@ def login():
         return render_template('login.html',
                                message='wrong login or password',
                                form=form)
-    return render_template('login.html', title=constant.TITLE, form=form)
+    return render_template('login.html', title='Log in', form=form)
 
 
 @app.route('/signin', methods=['GET', 'POST'])
@@ -162,7 +162,7 @@ def signin():
         session.add(user)
         session.commit()
         return redirect('/status/registration is successful')
-    return render_template('signin.html', title=constant.TITLE, form=form)
+    return render_template('signin.html', title='Sign in', form=form)
 
 
 @app.route('/user/<int:user_id>')
@@ -189,7 +189,7 @@ def user_page(user_id):
         dicts = list(map(lambda x:
                          [x.title, f'/dict/{x.id}'], dicts))
     return render_template('user_page.html',
-                           title=constant.TITLE, data=data, words=words, dicts=dicts)
+                           title='User page', data=data, words=words, dicts=dicts)
 
 
 @app.route('/word/<int:word_id>')
@@ -217,7 +217,7 @@ def word_page(word_id):
                       (x.user_id != current_id), f'/dict/{x.id}'],
                      dicts))
     return render_template('word_page.html',
-                           title=constant.TITLE, data=data, user=user_link, dicts=dicts)
+                           title='Word page', data=data, user=user_link, dicts=dicts)
 
 
 @app.route('/dict/<int:dict_id>')
@@ -236,16 +236,17 @@ def dict_page(dict_id):
     data = [dict.id, dict.title, dict.desc, dict.is_pb, dict.user_id]
     user_link = [user.nick, f'/user/{dict.user_id}']
     wd_ids = list(map(int, dict.wd_ids.split(', ')))
-    words = session.query(Word).filter(Word.id.in_(wd_ids), (Word.user_id == current_id) | Word.is_pb).all()
+    words = session.query(Word).filter(Word.id.in_(wd_ids),
+                                       (Word.user_id == current_id) | Word.is_pb).all()
     words = list(map(lambda x: [x.word + f' - {x.tr_list}' * (x.user_id == current_id) +
                                 f' (owner - {session.query(User).get(x.user_id).nick})' *
                                 (x.user_id != current_id), f'/word/{x.id}'],
                      words))
     return render_template('dict_page.html',
-                           title=constant.TITLE, data=data, user=user_link, words=words)
+                           title='Dict page', data=data, user=user_link, words=words)
 
 
-@app.route('/edit_user/<int:user_id>', methods=['GET', 'PUT'])
+@app.route('/edit_user/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def edit_user(user_id):
     session = db_session.create_session()
@@ -259,58 +260,59 @@ def edit_user(user_id):
         if current_user.id != user_id:
             return redirect('/status/access is denied')
         user = session.query(User).get(user_id)
-        form.nick = user.nick
-        form.email = user.email
-        form.password = user.email
+        form.nick.data = user.nick
+        form.email.data = user.email
     if form.validate_on_submit():
-        answer = mpt(f'/api/user/{user_id}', put,
-                     {'nick': form.nick, 'email': form.email, 'psw': form.password})
+        answer = mpt(f'user/{user_id}', put,
+                     {'nick': form.nick.data,
+                      'email': form.email.data,
+                      'psw': form.password.data})
         if answer['message'] == 'ok':
             return redirect('/status/changes are successful')
         return redirect(f'/status/{answer["message"]}')
-    return render_template('edit_user.html', title=constant.TITLE, form=form)
+    return render_template('edit_user.html', title='Edit user', form=form, user_id=user_id)
 
-
-@app.route('/delete_user/<int:user_id>', methods=['GET', 'DELETE'])
-@login_required
-def delete_user(user_id):
-    return ''
-
-
-@app.route('/post_word', methods=['GET', 'POST'])
-@login_required
-def post_word():
-    return ''
-
-
-@app.route('/edit_word/<int:word_id>', methods=['GET', 'PUT'])
-@login_required
-def edit_word(word_id):
-    return ''
-
-
-@app.route('/delete_word/<int:word_id>', methods=['GET', 'DELETE'])
-@login_required
-def delete_word(word_id):
-    return ''
-
-
-@app.route('/post_dict', methods=['GET', 'POST'])
-@login_required
-def post_dict():
-    return ''
-
-
-@app.route('/edit_dict/<int:dict_id>', methods=['GET', 'PUT'])
-@login_required
-def edit_dict(dict_id):
-    return ''
-
-
-@app.route('/delete_dict/<int:dict_id>', methods=['GET', 'DELETE'])
-@login_required
-def delete_dict(dict_id):
-    return ''
+#
+# @app.route('/delete_user/<int:user_id>', methods=['GET', 'DELETE'])
+# @login_required
+# def delete_user(user_id):
+#     return ''
+#
+#
+# @app.route('/post_word', methods=['GET', 'POST'])
+# @login_required
+# def post_word():
+#     return ''
+#
+#
+# @app.route('/edit_word/<int:word_id>', methods=['GET', 'PUT'])
+# @login_required
+# def edit_word(word_id):
+#     return ''
+#
+#
+# @app.route('/delete_word/<int:word_id>', methods=['GET', 'DELETE'])
+# @login_required
+# def delete_word(word_id):
+#     return ''
+#
+#
+# @app.route('/post_dict', methods=['GET', 'POST'])
+# @login_required
+# def post_dict():
+#     return ''
+#
+#
+# @app.route('/edit_dict/<int:dict_id>', methods=['GET', 'PUT'])
+# @login_required
+# def edit_dict(dict_id):
+#     return ''
+#
+#
+# @app.route('/delete_dict/<int:dict_id>', methods=['GET', 'DELETE'])
+# @login_required
+# def delete_dict(dict_id):
+#     return ''
 
 
 if __name__ == '__main__':
