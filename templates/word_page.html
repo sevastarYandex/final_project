@@ -5,6 +5,12 @@
 <div class="alert alert-dark" role="alert"><h3>Translation - {{ data[2] }}</h3></div>
 <div class="alert alert-light" role="alert"><h3>Is public - {{ data[3] }}</h3></div>
 <div class="alert alert-danger" role="alert"><a class="navbar-brand" href={{ user[1] }}>Owner - {{ user[0] }}</a></div>
+{% if current_user.is_authenticated %}
+{% if current_user.id == data[4] %}
+<a class="btn btn-danger" href="/edit_word/{{ data[0] }}">Edit word</a>
+<a class="btn btn-secondary" href="/delete_word/{{ data[0] }}">Delete word</a>
+{% endif %}
+{% endif %}
 <br><br><br>
 <div class="alert alert-success" role="alert"><h4>Dicts</h4></div>
 <ul>

@@ -5,7 +5,8 @@
 <div class="alert alert-dark" role="alert"><h3>Email - {{ data[2] }}</h3></div>
 {% if current_user.is_authenticated %}
 {% if current_user.id == data[0] %}
-<a class="btn btn-danger" href="/edit_user/{{ data[0] }}">Edit user profile</a>
+<a class="btn btn-warning" href="/edit_user/{{ data[0] }}">Edit user profile</a>
+<a class="btn btn-danger" href="/delete_user/{{ data[0] }}">Delete user</a>
 <a class="btn btn-secondary" href="/post_word">New word</a>
 <a class="btn btn-dark" href="/post_dict">New dictionary</a>
 {% endif %}

@@ -200,7 +200,7 @@ def word_page(word_id):
     if word.user_id != current_id and not word.is_pb:
         return render_template('base.html', message=f'word with id={word_id} is private')
     user = session.query(User).get(word.user_id)
-    data = [word.id, word.word, word.tr_list, word.is_pb]
+    data = [word.id, word.word, word.tr_list, word.is_pb, word.user_id]
     user_link = [user.nick, f'/user/{word.user_id}']
     dicts = session.query(Dict).filter((Dict.user_id == current_id) | Dict.is_pb).all()
     for dict in dicts:
@@ -228,7 +228,7 @@ def dict_page(dict_id):
     if dict.user_id != current_id and not dict.is_pb:
         return render_template('base.html', message=f'dict with id={dict_id} is private')
     user = session.query(User).get(dict.user_id)
-    data = [dict.id, dict.title, dict.desc, dict.is_pb]
+    data = [dict.id, dict.title, dict.desc, dict.is_pb, dict.user_id]
     user_link = [user.nick, f'/user/{dict.user_id}']
     wd_ids = list(map(int, dict.wd_ids.split(', ')))
     words = session.query(Word).filter(Word.id.in_(wd_ids), (Word.user_id == current_id) | Word.is_pb).all()
