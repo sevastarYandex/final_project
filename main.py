@@ -297,9 +297,9 @@ def post_word():
     form = AddWordForm()
     if form.validate_on_submit():
         answer = mpt('word', post,
-                     {'word': form.word,
-                      'tr_list': form.tr_list,
-                      'is_pb': form.is_pb,
+                     {'word': form.word.data,
+                      'tr_list': form.tr_list.data,
+                      'is_pb': form.is_pb.data,
                       'user_id': user_id})
         if answer['message'] == 'ok':
             return redirect('/status/adding is successful')

@@ -9,11 +9,16 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Log in')
 
 
-EditForm = LoginForm
-EditForm.nick = StringField('Nickname', validators=[DataRequired()])
-EditForm.submit = SubmitField('Edit')
+class EditForm(FlaskForm):
+    nick = StringField('Nickname', validators=[DataRequired()])
+    email = EmailField('Email', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Edit')
 
 
-SigninForm = EditForm
-SigninForm.password_again = PasswordField('Password again', validators=[DataRequired()])
-SigninForm.submit = SubmitField('Sign in')
+class SigninForm(FlaskForm):
+    nick = StringField('Nickname', validators=[DataRequired()])
+    email = EmailField('Email', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    password_again = PasswordField('Password again', validators=[DataRequired()])
+    submit = SubmitField('Sign in')

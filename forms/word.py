@@ -6,9 +6,12 @@ from wtforms.validators import DataRequired
 class AddWordForm(FlaskForm):
     word = StringField('Word', validators=[DataRequired()])
     tr_list = TextAreaField('Translation', validators=[DataRequired()])
-    is_pb = BooleanField('Is public', validators=[DataRequired()])
+    is_pb = BooleanField('Is public')
     submit = SubmitField('Add')
 
 
-EditWordForm = AddWordForm
-EditWordForm.submit = SubmitField('Edit')
+class EditWordForm(FlaskForm):
+    word = StringField('Word', validators=[DataRequired()])
+    tr_list = TextAreaField('Translation', validators=[DataRequired()])
+    is_pb = BooleanField('Is public')
+    submit = SubmitField('Edit')
