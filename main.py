@@ -286,12 +286,13 @@ def delete_user(user_id):
     mpt(f'user/{user_id}', delete)
     return redirect('/status/deletion is successful')
 
-#
-# @app.route('/post_word', methods=['GET', 'POST'])
-# @login_required
-# def post_word():
-#     return ''
-#
+
+@app.route('/post_word', methods=['GET', 'POST'])
+@login_required
+def post_word():
+    form = WordForm()
+    return ''
+
 #
 # @app.route('/edit_word/<int:word_id>', methods=['GET', 'PUT'])
 # @login_required
