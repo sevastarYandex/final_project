@@ -13,6 +13,7 @@ from data.user_res import UserRes, UserListRes
 from data.word_res import WordRes, WordListRes
 from data.dict_res import DictRes, DictListRes
 from forms.user import LoginForm, SigninForm, EditForm
+from forms.word import AddWordForm, EditWordForm
 
 
 app = Flask(__name__)
@@ -290,8 +291,20 @@ def delete_user(user_id):
 @app.route('/post_word', methods=['GET', 'POST'])
 @login_required
 def post_word():
-    form = WordForm()
-    return ''
+    if not current_user.is_authenticated:
+        return redirect('/status/access is denied')
+    user_id = current_user.id
+    form = AddWordForm()
+    if form.validate_on_submit():
+        answer = mpt('word', post,
+                     {'word': form.word,
+                      'tr_list': form.tr_list,
+                      'is_pb': form.is_pb,
+                      'user_id': user_id})
+        if answer['message'] == 'ok':
+            return redirect('/status/adding is successful')
+        return redirect(f'/status/{answer["message"]}')
+    return render_template('add_word.html', title='Add word', form=form)
 
 #
 # @app.route('/edit_word/<int:word_id>', methods=['GET', 'PUT'])
