@@ -1,6 +1,6 @@
 {% extends "base.html" %}
     {% block content %}
-        <div class="alert alert-dark" role="alert"><h2>Editing word with id={{ word_id }}</h2></div>
+        <div class="alert alert-dark" role="alert"><h2>Editing of the word with id={{ word_id }}</h2></div>
         <form action="" method="post">
         <p>
             {{ form.hidden_tag() }}
@@ -24,6 +24,6 @@
             <div class="alert alert-info" role="alert"><h4>{{ form.is_pb() }} {{ form.is_pb.label }}</h4></div>
         <br>
         <p>
-            {{ form.submit(type="submit", class="btn btn-primary") }}
+            {{ form.submit(type="submit", class="btn btn-warning") }}
         </form>
     {% endblock %}

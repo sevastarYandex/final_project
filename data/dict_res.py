@@ -23,7 +23,10 @@ class DictRes(Resource):
         resp = dict.to_dict(only=DC_FIELDS)
         del resp['user_id']
         resp['user'] = dict.user.to_dict(only=US_FIELDS)
-        wd_ids = list(map(int, dict.wd_ids.split(', ')))
+        if not dict.wd_ids:
+            wd_ids = []
+        else:
+            wd_ids = list(map(int, dict.wd_ids.split(', ')))
         del resp['wd_ids']
         resp['words'] = []
         for wd_id in wd_ids:
@@ -51,17 +54,18 @@ class DictRes(Resource):
             return jsonify({
                 'message': f'user with id={dict.user_id} '
                            f'already has dict "{args["title"]}"'})
-        for wd_id in args['wd_ids'].split(', '):
-            try:
-                wd_id = int(wd_id)
-            except Exception:
-                return jsonify({
-                    'message': f'word with id="{wd_id}" is not found'
-                })
-            if not session.query(Word).get(wd_id):
-                return jsonify({
-                    'message': f'word with id={wd_id} is not found'
-                })
+        if args['wd_ids']:
+            for wd_id in args['wd_ids'].split(', '):
+                try:
+                    wd_id = int(wd_id)
+                except Exception:
+                    return jsonify({
+                        'message': f'word with id="{wd_id}" is not found'
+                    })
+                if not session.query(Word).get(wd_id):
+                    return jsonify({
+                        'message': f'word with id={wd_id} is not found'
+                    })
         dict.title = args['title']
         dict.desc = args['desc']
         dict.wd_ids = args['wd_ids']
@@ -76,7 +80,10 @@ class DictListRes(Resource):
         dicts = []
         for dict in session.query(Dict).all():
             dict = dict.to_dict(only=DC_FIELDS)
-            dict['wd_ids'] = list(map(int, dict['wd_ids'].split(', ')))
+            if not dict['wd_ids']:
+                dict['wd_ids'] = []
+            else:
+                dict['wd_ids'] = list(map(int, dict['wd_ids'].split(', ')))
             dicts.append(dict)
         return jsonify({'message': 'ok',
                         'resp': {'dicts': dicts}})
@@ -94,17 +101,18 @@ class DictListRes(Resource):
             return jsonify({
                 'message': f'user with id={args["user_id"]} '
                            f'already has dict "{args["title"]}"'})
-        for wd_id in args['wd_ids'].split(', '):
-            try:
-                wd_id = int(wd_id)
-            except Exception:
-                return jsonify({
-                    'message': f'word with id="{wd_id}" is not found'
-                })
-            if not session.query(Word).get(wd_id):
-                return jsonify({
-                    'message': f'word with id={wd_id} is not found'
-                })
+        if args['wd_ids']:
+            for wd_id in args['wd_ids'].split(', '):
+                try:
+                    wd_id = int(wd_id)
+                except Exception:
+                    return jsonify({
+                        'message': f'word with id="{wd_id}" is not found'
+                    })
+                if not session.query(Word).get(wd_id):
+                    return jsonify({
+                        'message': f'word with id={wd_id} is not found'
+                    })
         dict = Dict()
         dict.title = args['title']
         dict.desc = args['desc']
