@@ -14,6 +14,7 @@ from data.word_res import WordRes, WordListRes
 from data.dict_res import DictRes, DictListRes
 from forms.user import LoginForm, SigninForm, EditForm
 from forms.word import AddWordForm, EditWordForm
+from forms.dict import AddDictForm, EditDictForm
 
 
 app = Flask(__name__)
@@ -236,7 +237,9 @@ def dict_page(dict_id):
     user = session.query(User).get(dict.user_id)
     data = [dict.id, dict.title, dict.desc, dict.is_pb, dict.user_id]
     user_link = [user.nick, f'/user/{dict.user_id}']
-    wd_ids = list(map(int, dict.wd_ids.split(', ')))
+    wd_ids = []
+    if dict.wd_ids:
+        wd_ids = list(map(int, dict.wd_ids.split(', ')))
     words = session.query(Word).filter(Word.id.in_(wd_ids),
                                        (Word.user_id == current_id) | Word.is_pb).all()
     words = list(map(lambda x: [x.word + f' - {x.tr_list}' * (x.user_id == current_id) +
@@ -288,8 +291,6 @@ def delete_user(user_id):
 @app.route('/post_word', methods=['GET', 'POST'])
 @login_required
 def post_word():
-    if not current_user.is_authenticated:
-        return redirect('/status/access is denied')
     user_id = current_user.id
     form = AddWordForm()
     if form.validate_on_submit():
@@ -344,23 +345,65 @@ def delete_word(word_id):
     mpt(f'word/{word_id}', delete)
     return redirect('/status/deletion is successful')
 
-#
-# @app.route('/post_dict', methods=['GET', 'POST'])
-# @login_required
-# def post_dict():
-#     return ''
-#
-#
-# @app.route('/edit_dict/<int:dict_id>', methods=['GET', 'PUT'])
-# @login_required
-# def edit_dict(dict_id):
-#     return ''
-#
-#
-# @app.route('/delete_dict/<int:dict_id>', methods=['GET', 'DELETE'])
-# @login_required
-# def delete_dict(dict_id):
-#     return ''
+
+@app.route('/post_dict', methods=['GET', 'POST'])
+@login_required
+def post_dict():
+    user_id = current_user.id
+    form = AddDictForm()
+    if form.validate_on_submit():
+        answer = mpt('dict', post,
+                     {'title': form.title.data,
+                      'desc': form.desc.data,
+                      'is_pb': form.is_pb.data,
+                      'wd_ids': '',
+                      'user_id': user_id})
+        if answer['message'] == 'ok':
+            return redirect('/status/adding is successful')
+        return redirect(f'/status/{answer["message"]}')
+    return render_template('add_dict.html', title='Add dictionary', form=form)
+
+
+@app.route('/edit_dict/<int:dict_id>', methods=['GET', 'POST'])
+@login_required
+def edit_dict(dict_id):
+    session = db_session.create_session()
+    form = EditDictForm()
+    dict = session.query(Dict).get(dict_id)
+    if not dict:
+        return redirect(f'/status/dictionary with id={dict_id} is not found')
+    if current_user.id != dict.user_id:
+        return redirect('/status/access is denied')
+    if request.method == 'GET':
+        form.title.data = dict.title
+        form.desc.data = dict.desc
+        form.is_pb.data = dict.is_pb
+    if form.validate_on_submit():
+        answer = mpt(f'dict/{dict_id}', put,
+                     {'title': form.title.data,
+                      'desc': form.desc.data,
+                      'wd_ids': '',
+                      'is_pb': form.is_pb.data})
+        if answer['message'] == 'ok':
+            return redirect('/status/changes are saved successfully')
+        else:
+            return render_template('edit_dict.html',
+                                   title='Edit dictionary', form=form,
+                                   dict_id=dict_id, message=answer['message'])
+    return render_template('edit_dict.html', title='Edit dictionary', form=form, dict_id=dict_id)
+
+
+@app.route('/delete_dict/<int:dict_id>', methods=['GET', 'POST'])
+@login_required
+def delete_dict(dict_id):
+    session = db_session.create_session()
+    dict = session.query(Dict).get(dict_id)
+    if not dict:
+        return redirect(f'/status/dictionary with id={dict_id} is not found')
+    if current_user.id != dict.user_id:
+        return redirect('/status/access is denied')
+    mpt(f'dict/{dict_id}', delete)
+    return redirect('/status/deletion is successful')
 
 
 if __name__ == '__main__':

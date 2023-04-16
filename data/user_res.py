@@ -41,11 +41,17 @@ class UserRes(Resource):
         ))
         for i in range(len(user_dicts)):
             dict = user_dicts[i]
-            dict['wd_ids'] = list(map(int, dict['wd_ids'].split(', ')))
+            if not dict['wd_ids']:
+                dict['wd_ids'] = []
+            else:
+                dict['wd_ids'] = list(map(int, dict['wd_ids'].split(', ')))
             user_dicts[i] = dict
         for i in range(len(other_dicts)):
             dict = other_dicts[i]
-            dict['wd_ids'] = list(map(int, dict['wd_ids'].split(', ')))
+            if not dict['wd_ids']:
+                dict['wd_ids'] = []
+            else:
+                dict['wd_ids'] = list(map(int, dict['wd_ids'].split(', ')))
             other_dicts[i] = dict
         resp['user_words'] = user_words
         resp['other_words'] = other_words
@@ -60,6 +66,13 @@ class UserRes(Resource):
         session.delete(user)
         for word in session.query(Word).filter(Word.user_id == user_id).all():
             session.delete(word)
+            for dict in session.query(Dict).all():
+                if not dict.wd_ids:
+                    continue
+                wd_ids = list(map(int, dict.wd_ids.split(', ')))
+                if word.id in wd_ids:
+                    wd_ids.remove(word.id)
+                dict.wd_ids = ', '.join(map(str, wd_ids))
         for dict in session.query(Dict).filter(Dict.user_id == user_id).all():
             session.delete(dict)
         session.commit()
