@@ -211,8 +211,9 @@ def word_page(word_id):
     user_link = [user.nick, f'/user/{word.user_id}']
     dicts = session.query(Dict).filter((Dict.user_id == current_id) | Dict.is_pb).all()
     for dict in dicts:
-        if word_id not in list(map(int, dict.wd_ids.split(', '))):
-            dicts.remove(dict)
+        if dict.wd_ids:
+            if word_id not in list(map(int, dict.wd_ids.split(', '))):
+                dicts.remove(dict)
     dicts = list(map(lambda x:
                      [x.title + f' - {x.desc}' * (x.user_id == current_id) +
                       f' (owner - {session.query(User).get(x.user_id).nick})' *
@@ -351,12 +352,19 @@ def delete_word(word_id):
 def post_dict():
     user_id = current_user.id
     form = AddDictForm()
+    choices = [f'{word["id"]} (id), {word["word"]} - {word["tr_list"]}' for word in
+              mpt(f'user/{user_id}', get)['resp']['user']['user_words']]
+    choices.extend([f'{word["id"]} (id), {word["word"]} '
+                    f'(owner - {db_session.create_session().query(User).get(word["user_id"]).nick}))'
+                    for word in mpt(f'user/{user_id}', get)['resp']['user']['other_words']])
+    form.words.choices = choices
     if form.validate_on_submit():
+        wd_ids = ', '.join(map(lambda x: x.split()[0], form.words.data))
         answer = mpt('dict', post,
                      {'title': form.title.data,
                       'desc': form.desc.data,
                       'is_pb': form.is_pb.data,
-                      'wd_ids': '',
+                      'wd_ids': wd_ids,
                       'user_id': user_id})
         if answer['message'] == 'ok':
             return redirect('/status/adding is successful')
@@ -368,21 +376,39 @@ def post_dict():
 @login_required
 def edit_dict(dict_id):
     session = db_session.create_session()
-    form = EditDictForm()
     dict = session.query(Dict).get(dict_id)
     if not dict:
         return redirect(f'/status/dictionary with id={dict_id} is not found')
     if current_user.id != dict.user_id:
         return redirect('/status/access is denied')
+    form = EditDictForm()
+    user_id = dict.user_id
+    choices = [f'{word["id"]} (id), {word["word"]} - {word["tr_list"]}' for word in
+               mpt(f'user/{user_id}', get)['resp']['user']['user_words']]
+    choices.extend([f'{word["id"]} (id), {word["word"]} '
+                    f'(owner - {session.query(User).get(word["user_id"]).nick}))'
+                    for word in mpt(f'user/{user_id}', get)['resp']['user']['other_words']])
+    form.words.choices = choices
     if request.method == 'GET':
         form.title.data = dict.title
         form.desc.data = dict.desc
         form.is_pb.data = dict.is_pb
+        wd_data = []
+        if dict.wd_ids:
+            for wd_id in list(map(int, dict.wd_ids.split(', '))):
+                word = session.query(Word).get(wd_id)
+                if word.user_id == current_user.id:
+                    wd_data.append(f'{word.id} (id), {word.word} - {word.tr_list}')
+                    continue
+                wd_data.append(f'{word.id} (id), {word.word} '
+                               f'(owner - {session.query(User).get(word.user_id).nick}))')
+        form.words.data = wd_data
     if form.validate_on_submit():
+        wd_ids = ', '.join(map(lambda x: x.split()[0], form.words.data))
         answer = mpt(f'dict/{dict_id}', put,
                      {'title': form.title.data,
                       'desc': form.desc.data,
-                      'wd_ids': '',
+                      'wd_ids': wd_ids,
                       'is_pb': form.is_pb.data})
         if answer['message'] == 'ok':
             return redirect('/status/changes are saved successfully')
