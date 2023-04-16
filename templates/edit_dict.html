@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+    {% block content %}
+        <div class="alert alert-dark" role="alert"><h2>Editing of the dictionary with id={{ dict_id }}</h2></div>
+        <form action="" method="post">
+        <p>
+            {{ form.hidden_tag() }}
+            <div class="alert alert-info" role="alert"><h4>{{ form.title.label }}</h4></div>
+            {{ form.title(class="form-control") }}
+            {% for error in form.title.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        <p>
+            {{ form.hidden_tag() }}
+            <div class="alert alert-info" role="alert"><h4>{{ form.desc.label }}</h4></div>
+            {{ form.desc(class="form-control") }}
+            {% for error in form.desc.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        <p>
+            {{ form.hidden_tag() }}
+            <div class="alert alert-info" role="alert"><h4>{{ form.words.label }}</h4></div>
+            {{ form.words(class="form-control", size=6) }}
+            {% for error in form.words.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        <p>
+            <div class="alert alert-info" role="alert"><h4>{{ form.is_pb() }} {{ form.is_pb.label }}</h4></div>
+        <br>
+        <p>
+            {{ form.submit(type="submit", class="btn btn-success") }}
+        </form>
+    {% endblock %}
