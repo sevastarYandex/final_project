@@ -21,22 +21,36 @@ class UserRes(Resource):
         session = db_session.create_session()
         user = session.query(User).get(user_id)
         resp = user.to_dict(only=US_FIELDS)
-        words = list(map(
+        user_words = list(map(
             lambda x: x.to_dict(only=WD_FIELDS),
             session.query(Word).filter(
-                (Word.user_id == user_id) | (Word.is_pb == True)).all()
-        ))
-        resp['words'] = words
-        dicts = list(map(
+            Word.user_id == user_id).all()))
+        other_words = list(map(
+            lambda x: x.to_dict(only=WD_FIELDS),
+            session.query(Word).filter(
+            Word.user_id != user_id, Word.is_pb == True).all()))
+        user_dicts = list(map(
             lambda x: x.to_dict(only=DC_FIELDS),
             session.query(Dict).filter(
-                (Dict.user_id == user_id) | (Dict.is_pb == True)).all()
+            Dict.user_id == user_id).all()
         ))
-        for i in range(len(dicts)):
-            dict = dicts[i]
+        other_dicts = list(map(
+            lambda x: x.to_dict(only=DC_FIELDS),
+            session.query(Dict).filter(
+            Dict.user_id != user_id, Dict.is_pb == True).all()
+        ))
+        for i in range(len(user_dicts)):
+            dict = user_dicts[i]
             dict['wd_ids'] = list(map(int, dict['wd_ids'].split(', ')))
-            dicts[i] = dict
-        resp['dicts'] = dicts
+            user_dicts[i] = dict
+        for i in range(len(other_dicts)):
+            dict = other_dicts[i]
+            dict['wd_ids'] = list(map(int, dict['wd_ids'].split(', ')))
+            other_dicts[i] = dict
+        resp['user_words'] = user_words
+        resp['other_words'] = other_words
+        resp['user_dicts'] = user_dicts
+        resp['other_dicts'] = other_dicts
         return jsonify({'message': 'ok', 'resp': {'user': resp}})
 
     def delete(self, user_id):
