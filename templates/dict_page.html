@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="alert alert-primary" role="alert"><h2>Profile of the dict with id={{ data[0] }}</h2></div>
+<div class="alert alert-secondary" role="alert"><h3>Title - {{ data[1] }}</h3></div>
+<div class="alert alert-dark" role="alert"><h3>Description - {{ data[2] }}</h3></div>
+<div class="alert alert-light" role="alert"><h3>Is public - {{ data[3] }}</h3></div>
+<div class="alert alert-danger" role="alert"><a class="navbar-brand" href={{ user[1] }}>Owner - {{ user[0] }}</a></div>
+{% if current_user.is_authenticated %}
+{% if current_user.id == data[4] %}
+<a class="btn btn-warning" href="/edit_dict/{{ data[0] }}">Edit dictionary</a>
+<a class="btn btn-danger" href="/delete_dict/{{ data[0] }}">Delete dictionary</a>
+{% endif %}
+{% endif %}
+<br><br><br>
+<div class="alert alert-success" role="alert"><h4>Words</h4></div>
+<ul>
+    {% for smt in words %}
+    <li><a class="navbar-brand" href={{ smt[1] }}>{{ smt[0] }}</a></li>
+    {% endfor %}
+</ul>
+{% if words == [] %}
+<div class="alert alert-warning" role="alert"><h5>List is empty</h5></div>
+{% endif %}
+{% endblock %}
