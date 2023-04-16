@@ -11,7 +11,10 @@ word_put_parser.add_argument('word', required=True)
 word_put_parser.add_argument('tr_list', required=True)
 word_put_parser.add_argument('is_pb', required=True, type=bool)
 
-word_post_parser = word_put_parser
+word_post_parser = reqparse.RequestParser()
+word_post_parser.add_argument('word', required=True)
+word_post_parser.add_argument('tr_list', required=True)
+word_post_parser.add_argument('is_pb', required=True, type=bool)
 word_post_parser.add_argument('user_id', required=True, type=int)
 
 dict_put_parser = reqparse.RequestParser()
@@ -20,5 +23,9 @@ dict_put_parser.add_argument('desc', required=True)
 dict_put_parser.add_argument('wd_ids', required=True)
 dict_put_parser.add_argument('is_pb', required=True, type=bool)
 
-dict_post_parser = dict_put_parser
+dict_post_parser = reqparse.RequestParser()
+dict_post_parser.add_argument('title', required=True)
+dict_post_parser.add_argument('desc', required=True)
+dict_post_parser.add_argument('wd_ids', required=True)
+dict_post_parser.add_argument('is_pb', required=True, type=bool)
 dict_post_parser.add_argument('user_id', required=True, type=int)

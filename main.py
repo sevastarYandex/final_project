@@ -255,12 +255,9 @@ def edit_user(user_id):
     user = session.query(User).get(user_id)
     if not user:
         return redirect(f'/status/user with id={user_id} is not found')
+    if current_user.id != user_id:
+        return redirect('/status/access is denied')
     if request.method == 'GET':
-        if not current_user.is_authenticated:
-            return redirect('/status/access is denied')
-        if current_user.id != user_id:
-            return redirect('/status/access is denied')
-        user = session.query(User).get(user_id)
         form.nick.data = user.nick
         form.email.data = user.email
     if form.validate_on_submit():
@@ -269,8 +266,10 @@ def edit_user(user_id):
                       'email': form.email.data,
                       'psw': form.password.data})
         if answer['message'] == 'ok':
-            return redirect('/status/changes are successful')
-        return redirect(f'/status/{answer["message"]}')
+            return redirect('/status/changes are saved successfully')
+        return render_template('edit_user.html',
+                               title='Edit user', form=form,
+                               user_id=user_id, message=answer['message'])
     return render_template('edit_user.html', title='Edit user', form=form, user_id=user_id)
 
 
@@ -280,8 +279,6 @@ def delete_user(user_id):
     session = db_session.create_session()
     if not session.query(User).get(user_id):
         return redirect(f'/status/user with id={user_id} is not found')
-    if not current_user.is_authenticated:
-        return redirect('/status/access is denied')
     if current_user.id != user_id:
         return redirect('/status/access is denied')
     mpt(f'user/{user_id}', delete)
@@ -306,12 +303,34 @@ def post_word():
         return redirect(f'/status/{answer["message"]}')
     return render_template('add_word.html', title='Add word', form=form)
 
-#
-# @app.route('/edit_word/<int:word_id>', methods=['GET', 'PUT'])
-# @login_required
-# def edit_word(word_id):
-#     return ''
-#
+
+@app.route('/edit_word/<int:word_id>', methods=['GET', 'POST'])
+@login_required
+def edit_word(word_id):
+    session = db_session.create_session()
+    form = EditWordForm()
+    word = session.query(Word).get(word_id)
+    if not word:
+        return redirect(f'/status/word with id={word_id} is not found')
+    if current_user.id != word.user_id:
+        return redirect('/status/access is denied')
+    if request.method == 'GET':
+        form.word.data = word.word
+        form.tr_list.data = word.tr_list
+        form.is_pb.data = word.is_pb
+    if form.validate_on_submit():
+        answer = mpt(f'word/{word_id}', put,
+                     {'word': form.word.data,
+                      'tr_list': form.tr_list.data,
+                      'is_pb': form.is_pb.data})
+        if answer['message'] == 'ok':
+            return redirect('/status/changes are saved successfully')
+        else:
+            return render_template('edit_word.html',
+                                   title='Edit word', form=form,
+                                   word_id=word_id, message=answer['message'])
+    return render_template('edit_word.html', title='Edit word', form=form, word_id=word_id)
+
 #
 # @app.route('/delete_word/<int:word_id>', methods=['GET', 'DELETE'])
 # @login_required
