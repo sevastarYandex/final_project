@@ -331,12 +331,19 @@ def edit_word(word_id):
                                    word_id=word_id, message=answer['message'])
     return render_template('edit_word.html', title='Edit word', form=form, word_id=word_id)
 
-#
-# @app.route('/delete_word/<int:word_id>', methods=['GET', 'DELETE'])
-# @login_required
-# def delete_word(word_id):
-#     return ''
-#
+
+@app.route('/delete_word/<int:word_id>', methods=['GET', 'POST'])
+@login_required
+def delete_word(word_id):
+    session = db_session.create_session()
+    word = session.query(Word).get(word_id)
+    if not word:
+        return redirect(f'/status/word with id={word_id} is not found')
+    if current_user.id != word.user_id:
+        return redirect('/status/access is denied')
+    mpt(f'word/{word_id}', delete)
+    return redirect('/status/deletion is successful')
+
 #
 # @app.route('/post_dict', methods=['GET', 'POST'])
 # @login_required
