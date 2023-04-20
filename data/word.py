@@ -1,9 +1,20 @@
+"""py-file with the mechanism of the db-table 'word'"""
+
+
 from .db_session import SqlAlchemyBase
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy import orm, Column, Integer, String, ForeignKey, Boolean
 
 
 class Word(SqlAlchemyBase, SerializerMixin):
+    """class of the table 'word'
+            contains next fields:
+            id - unique key integer
+            word - string, english word
+            tr_list - string, russian translations like 'tr1, tr2, ..., trk'
+            user_id - host id
+            is_pb - is public
+            user - host"""
     __tablename__ = 'word'
     id = Column(
         Integer,

@@ -1,3 +1,6 @@
+"""py-file with word resources"""
+
+
 from flask_restful import abort, Resource
 from . import db_session
 from .user import User
@@ -9,6 +12,7 @@ from .constant import US_FIELDS, WD_FIELDS, DC_FIELDS
 
 
 def abort_if_word_not_found(word_id):
+    """function, raises abort-404 if word with id=word_id is not found"""
     session = db_session.create_session()
     word = session.query(Word).get(word_id)
     if not word:
@@ -16,7 +20,38 @@ def abort_if_word_not_found(word_id):
 
 
 class WordRes(Resource):
+    """class of the word resource for operations on a word with id=word_id"""
     def get(self, word_id):
+        """format is
+        {
+          "message": message,
+          "resp": {
+            "word": {
+              "dicts": [
+                {
+                  "desc": description,
+                  "id": dict_id,
+                  "is_pb": is_public,
+                  "title": title,
+                  "user_id": host_id,
+                  "wd_ids": [
+                    word_id, ...
+                  ]
+                }, ...
+              ],
+              "id": id,
+              "is_pb": is_public,
+              "tr_list": translation,
+              "user": {
+                "email": email,
+                "hashed_psw": hashed_password,
+                "id": user_id,
+                "nick": nickname
+              },
+              "word": word
+            }
+          }
+        }"""
         abort_if_word_not_found(word_id)
         session = db_session.create_session()
         word = session.query(Word).get(word_id)
@@ -54,6 +89,7 @@ class WordRes(Resource):
         return jsonify({'message': 'ok'})
 
     def put(self, word_id):
+        # user can't have two words with the same names
         abort_if_word_not_found(word_id)
         session = db_session.create_session()
         word = session.query(Word).get(word_id)
@@ -71,7 +107,23 @@ class WordRes(Resource):
 
 
 class WordListRes(Resource):
+    """class of the word resource for operations on a word-table"""
     def get(self):
+        """format is
+        {
+          "message": message,
+          "resp": {
+            "words": [
+              {
+                "id": word_id,
+                "is_pb": is_public,
+                "tr_list": translation,
+                "user_id": host_id,
+                "word": word
+              }, ...
+            ]
+          }
+        }"""
         session = db_session.create_session()
         words = session.query(Word).all()
         return jsonify(
@@ -86,6 +138,7 @@ class WordListRes(Resource):
         )
 
     def post(self):
+        # user can't have two words with the same names
         args = word_post_parser.parse_args()
         session = db_session.create_session()
         if session.query(Word).filter(Word.word == args['word'],

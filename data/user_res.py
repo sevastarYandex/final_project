@@ -1,3 +1,6 @@
+"""py-file with user resources"""
+
+
 from flask_restful import abort, Resource
 from flask import jsonify
 from . import db_session
@@ -9,6 +12,7 @@ from .constant import US_FIELDS, WD_FIELDS, DC_FIELDS
 
 
 def abort_if_user_not_found(user_id):
+    """function, raises abort-404 if user with id=user_id is not found"""
     session = db_session.create_session()
     user = session.query(User).get(user_id)
     if not user:
@@ -16,7 +20,45 @@ def abort_if_user_not_found(user_id):
 
 
 class UserRes(Resource):
+    """class of the user resource for operations on a user with id=user_id"""
     def get(self, user_id):
+        """format is
+        {
+          "message": message,
+          "resp": {
+            "user": {
+              "email": email,
+              "hashed_psw": hashed_password,
+              "id": id,
+              "nick": nickname,
+              "other_dicts": [
+                {
+                  "desc": description,
+                  "id": dict_id,
+                  "is_pb": is_public,
+                  "title": dict_title,
+                  "user_id": dict_user_id,
+                  "wd_ids": [
+                    word_id, ...
+                  ]
+                }, ...
+              ],
+              "user_dicts": [
+                equal to other_dicts
+              ],
+              "user_words": [
+                {
+                  "id": word_id,
+                  "is_pb": is_public,
+                  "tr_list": word_translation,
+                  "user_id": host_id,
+                  "word": word
+                }, ...
+              ],
+              "other_words": [equal to user_words]
+            }
+          }
+        }"""
         abort_if_user_not_found(user_id)
         session = db_session.create_session()
         user = session.query(User).get(user_id)
@@ -79,6 +121,7 @@ class UserRes(Resource):
         return jsonify({'message': 'ok'})
 
     def put(self, user_id):
+        # email of the user must be unique
         abort_if_user_not_found(user_id)
         session = db_session.create_session()
         user = session.query(User).get(user_id)
@@ -95,7 +138,22 @@ class UserRes(Resource):
 
 
 class UserListRes(Resource):
+    """class of the user resource for operations on a user-table"""
     def get(self):
+        """format is
+        {
+          "message": message,
+          "resp": {
+            "users": [
+              {
+                "email": email,
+                "hashed_psw": hashed_password,
+                "id": id,
+                "nick": nickname
+              }, ...
+            ]
+          }
+        }"""
         session = db_session.create_session()
         users = session.query(User).all()
         return jsonify(
@@ -110,6 +168,7 @@ class UserListRes(Resource):
         )
 
     def post(self):
+        # email of the user must be unique
         args = user_parser.parse_args()
         session = db_session.create_session()
         if session.query(User).filter(User.email == args['email']).all():

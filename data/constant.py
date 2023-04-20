@@ -1,3 +1,6 @@
+"""py-file with some constants"""
+
+
 SECRET_KEY = 'yandexlyceum_secret_key'
 DB_NAME = 'db/eng_db.db'
 PORT = 8080

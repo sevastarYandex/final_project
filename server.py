@@ -1,3 +1,6 @@
+"""py-file with handlers"""
+
+
 import sqlalchemy.orm
 from test import mpt
 from requests import get, delete, post, put
@@ -99,6 +102,7 @@ def status(message):
 @app.route('/')
 @app.route('/welcome')
 def welcome():
+    """main page with words and dicts"""
     session = db_session.create_session()
     if current_user.is_authenticated:
         user_id = current_user.id
@@ -131,6 +135,7 @@ def welcome():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """login page"""
     form = LoginForm()
     if form.validate_on_submit():
         session = db_session.create_session()
@@ -140,21 +145,23 @@ def login():
             return redirect('/status/authorization is successful')
         return render_template('login.html',
                                message='wrong login or password',
+                               title='Log in',
                                form=form)
     return render_template('login.html', title='Log in', form=form)
 
 
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
+    """signin page"""
     form = SigninForm()
     if form.validate_on_submit():
         if form.password.data != form.password_again.data:
-            return render_template('signin.html', title=constant.TITLE,
+            return render_template('signin.html', title='Sign in',
                                    form=form,
                                    message="passwords are not equal")
         session = db_session.create_session()
         if session.query(User).filter(User.email == form.email.data).first():
-            return render_template('signin.html', title=constant.TITLE,
+            return render_template('signin.html', title='Sign in',
                                    form=form,
                                    message='email is already used')
         user = User()
@@ -169,6 +176,7 @@ def signin():
 
 @app.route('/user/<int:user_id>')
 def user_page(user_id):
+    """page of the user with id=user_id"""
     session = db_session.create_session()
     user = session.query(User).get(user_id)
     if not user:
@@ -196,6 +204,7 @@ def user_page(user_id):
 
 @app.route('/word/<int:word_id>')
 def word_page(word_id):
+    """page of the word with id=word_id"""
     session = db_session.create_session()
     word = session.query(Word).get(word_id)
     if not word:
@@ -225,6 +234,7 @@ def word_page(word_id):
 
 @app.route('/dict/<int:dict_id>')
 def dict_page(dict_id):
+    """page of the dict with id=dict_id"""
     session = db_session.create_session()
     dict = session.query(Dict).get(dict_id)
     if not dict:
@@ -254,6 +264,7 @@ def dict_page(dict_id):
 @app.route('/edit_user/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def edit_user(user_id):
+    """page for editing of the user with id=user_id"""
     session = db_session.create_session()
     form = EditForm()
     user = session.query(User).get(user_id)
@@ -280,6 +291,7 @@ def edit_user(user_id):
 @app.route('/delete_user/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def delete_user(user_id):
+    """page for deletion of the user with id=user_id"""
     session = db_session.create_session()
     if not session.query(User).get(user_id):
         return redirect(f'/status/user with id={user_id} is not found')
@@ -292,6 +304,7 @@ def delete_user(user_id):
 @app.route('/post_word', methods=['GET', 'POST'])
 @login_required
 def post_word():
+    """page for adding a new word"""
     user_id = current_user.id
     form = AddWordForm()
     if form.validate_on_submit():
@@ -302,13 +315,14 @@ def post_word():
                       'user_id': user_id})
         if answer['message'] == 'ok':
             return redirect('/status/adding is successful')
-        return redirect(f'/status/{answer["message"]}')
+        return render_template('add_word.html', title='Add word', form=form, message=answer["message"])
     return render_template('add_word.html', title='Add word', form=form)
 
 
 @app.route('/edit_word/<int:word_id>', methods=['GET', 'POST'])
 @login_required
 def edit_word(word_id):
+    """page for editing of the word with id=word_id"""
     session = db_session.create_session()
     form = EditWordForm()
     word = session.query(Word).get(word_id)
@@ -337,6 +351,7 @@ def edit_word(word_id):
 @app.route('/delete_word/<int:word_id>', methods=['GET', 'POST'])
 @login_required
 def delete_word(word_id):
+    """page for deletion of the word with id=word_id"""
     session = db_session.create_session()
     word = session.query(Word).get(word_id)
     if not word:
@@ -350,13 +365,15 @@ def delete_word(word_id):
 @app.route('/post_dict', methods=['GET', 'POST'])
 @login_required
 def post_dict():
+    """page for adding a new dictionary"""
     user_id = current_user.id
     form = AddDictForm()
-    choices = [f'{word["id"]} (id), {word["word"]} - {word["tr_list"]}' for word in
-              mpt(f'user/{user_id}', get)['resp']['user']['user_words']]
-    choices.extend([f'{word["id"]} (id), {word["word"]} '
-                    f'(owner - {db_session.create_session().query(User).get(word["user_id"]).nick}))'
-                    for word in mpt(f'user/{user_id}', get)['resp']['user']['other_words']])
+    session = db_session.create_session()
+    choices = [f'{word.id} (id), {word.word} - {word.tr_list}'
+               for word in session.query(Word).filter(Word.user_id == user_id).all()]
+    choices.extend([f'{word.id} (id), {word.word} '
+                    f'(owner - {session.query(User).get(word.user_id).nick}))'
+                    for word in session.query(Word).filter(Word.user_id != user_id, Word.is_pb)])
     form.words.choices = choices
     if form.validate_on_submit():
         wd_ids = ', '.join(map(lambda x: x.split()[0], form.words.data))
@@ -368,13 +385,14 @@ def post_dict():
                       'user_id': user_id})
         if answer['message'] == 'ok':
             return redirect('/status/adding is successful')
-        return redirect(f'/status/{answer["message"]}')
+        return render_template('add_dict.html', title='Add dictionary', form=form, message=answer["message"])
     return render_template('add_dict.html', title='Add dictionary', form=form)
 
 
 @app.route('/edit_dict/<int:dict_id>', methods=['GET', 'POST'])
 @login_required
 def edit_dict(dict_id):
+    """page for editing of the dictionary with id=dict_id"""
     session = db_session.create_session()
     dict = session.query(Dict).get(dict_id)
     if not dict:
@@ -383,11 +401,11 @@ def edit_dict(dict_id):
         return redirect('/status/access is denied')
     form = EditDictForm()
     user_id = dict.user_id
-    choices = [f'{word["id"]} (id), {word["word"]} - {word["tr_list"]}' for word in
-               mpt(f'user/{user_id}', get)['resp']['user']['user_words']]
-    choices.extend([f'{word["id"]} (id), {word["word"]} '
-                    f'(owner - {session.query(User).get(word["user_id"]).nick}))'
-                    for word in mpt(f'user/{user_id}', get)['resp']['user']['other_words']])
+    choices = [f'{word.id} (id), {word.word} - {word.tr_list}'
+               for word in session.query(Word).filter(Word.user_id == user_id).all()]
+    choices.extend([f'{word.id} (id), {word.word} '
+                    f'(owner - {session.query(User).get(word.user_id).nick}))'
+                    for word in session.query(Word).filter(Word.user_id != user_id, Word.is_pb)])
     form.words.choices = choices
     if request.method == 'GET':
         form.title.data = dict.title
@@ -422,6 +440,7 @@ def edit_dict(dict_id):
 @app.route('/delete_dict/<int:dict_id>', methods=['GET', 'POST'])
 @login_required
 def delete_dict(dict_id):
+    """page for deletion of the dictionary with id=dict_id"""
     session = db_session.create_session()
     dict = session.query(Dict).get(dict_id)
     if not dict:

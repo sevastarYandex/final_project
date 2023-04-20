@@ -1,3 +1,6 @@
+"""py-file with dictionary resources"""
+
+
 from flask_restful import abort, Resource
 from . import db_session
 from .user import User
@@ -9,6 +12,7 @@ from .constant import US_FIELDS, WD_FIELDS, DC_FIELDS
 
 
 def abort_if_dict_not_found(dict_id):
+    """function, raises abort-404 if dictionary with id=dict_id is not found"""
     session = db_session.create_session()
     dict = session.query(Dict).get(dict_id)
     if not dict:
@@ -16,7 +20,35 @@ def abort_if_dict_not_found(dict_id):
 
 
 class DictRes(Resource):
+    """class of the dict resource for operations on a dict with id=dict_id"""
     def get(self, dict_id):
+        """format is
+        {
+          "message": message,
+          "resp": {
+            "dict": {
+              "desc": description,
+              "id": id,
+              "is_pb": is_public,
+              "title": title,
+              "user": {
+                "email": email,
+                "hashed_psw": hashed_password,
+                "id": user_id,
+                "nick": nickname
+              },
+              "words": [
+                {
+                  "id": word_id,
+                  "is_pb": is_public,
+                  "tr_list": translation,
+                  "user_id": host_id,
+                  "word": word
+                }, ...
+              ]
+            }
+          }
+        }"""
         abort_if_dict_not_found(dict_id)
         session = db_session.create_session()
         dict = session.query(Dict).get(dict_id)
@@ -43,6 +75,7 @@ class DictRes(Resource):
         return jsonify({'message': 'ok'})
 
     def put(self, dict_id):
+        # host can't have two dicts with the same titles
         abort_if_dict_not_found(dict_id)
         session = db_session.create_session()
         dict = session.query(Dict).get(dict_id)
@@ -75,7 +108,24 @@ class DictRes(Resource):
 
 
 class DictListRes(Resource):
+    """class of the dict resource for operations on a dict-table"""
     def get(self):
+        """format is
+        {
+          "message": message,
+          "resp": {
+            "dicts": [
+              {
+                "desc": description,
+                "id": dict_id,
+                "is_pb": is_public,
+                "title": title,
+                "user_id": host_id,
+                "wd_ids": [word_id, ...]
+              }, ...
+            ]
+          }
+        }"""
         session = db_session.create_session()
         dicts = []
         for dict in session.query(Dict).all():
@@ -89,6 +139,7 @@ class DictListRes(Resource):
                         'resp': {'dicts': dicts}})
 
     def post(self):
+        # host can't have two dicts with the same titles
         args = dict_post_parser.parse_args()
         session = db_session.create_session()
         if not session.query(User).get(args['user_id']):
